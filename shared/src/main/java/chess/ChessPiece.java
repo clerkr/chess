@@ -134,12 +134,45 @@ public class ChessPiece {
         return moves;
     }
 
+    private ArrayList<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
+        ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
+        ChessMove move;
+        int row;
+        int col;
+
+        int[][] directions = {
+                {2,1},
+                {2,-1},
+                {1,-2},
+                {-1,-2},
+                {-2,-1},
+                {-2,1},
+                {-1,2},
+                {1,2}
+        };
+
+        for (int[] direction : directions) {
+            row = myPosition.getRow() + direction[0];
+            col = myPosition.getColumn() + direction[1];
+            if (checkInBounds(row, col)) {
+                if (!isPiece(board, row, col) || (isPiece(board, row, col) && !isFriend(board, row, col))) {
+                    ChessPosition endPosition = new ChessPosition(row, col);
+                    move = new ChessMove(myPosition, endPosition, null);
+                    moves.add(move);
+                }
+            }
+        }
+        return moves;
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
 
         if (type == PieceType.BISHOP) {
             return bishopMoves(board, myPosition);
         } else if (type == PieceType.KING) {
             return kingMoves(board, myPosition);
+        } else if (type == PieceType.KNIGHT) {
+            return knightMoves(board, myPosition);
         }
 //        return bishopMoves(myPosition);
         return new ArrayList<ChessMove>();
