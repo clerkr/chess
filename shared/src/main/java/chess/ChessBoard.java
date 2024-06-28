@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -56,7 +57,53 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        for (int row = 0; row < 8; row++) {
+
+
+            ChessPiece.PieceType[] side_pieces = new ChessPiece.PieceType[3];
+            side_pieces[0] = ChessPiece.PieceType.ROOK;
+            side_pieces[1] = ChessPiece.PieceType.KNIGHT;
+            side_pieces[2] = ChessPiece.PieceType.BISHOP;
+
+            if (row == 0) {
+                for (int i = 0; i < 3; i++) {
+                    squares[row][i] = new ChessPiece(ChessGame.TeamColor.WHITE, side_pieces[i]);
+                }
+                squares[row][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+                squares[row][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+                for (int i = 2; i >= 0; i--) {
+                    squares[row][7-i] = new ChessPiece(ChessGame.TeamColor.WHITE, side_pieces[i]);
+                }
+            }
+            if (row == 7) {
+                for (int i = 0; i < 3; i++) {
+                    squares[row][i] = new ChessPiece(ChessGame.TeamColor.BLACK, side_pieces[i]);
+                }
+                squares[row][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+                squares[row][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+                for (int i = 2; i >= 0; i--) {
+                    squares[row][7-i] = new ChessPiece(ChessGame.TeamColor.BLACK, side_pieces[i]);
+                }
+            }
+
+            // Pawns
+            if (row == 1) {
+                for (int i = 0; i < 8; i++) {
+                    squares[row][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+                }
+            } else if (row == 6) {
+                for (int i = 0; i < 8; i++) {
+                    squares[row][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+                }
+            }
+
+            if (row > 1 && row < 6) {
+                for (ChessPiece square : squares[row]) {
+                    square = null;
+                }
+            }
+
+        }
     }
 
 
