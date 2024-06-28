@@ -103,6 +103,41 @@ public class ChessPiece {
         return moves;
     }
 
+    private ArrayList<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
+        ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
+        ChessMove move;
+        int row;
+        int col;
+
+        int[][] directions = {
+                {1,0},      // Up
+                {0,-1},     // Left
+                {-1,0},    // Down
+                {0,1},     // Right
+        };
+        for (int[] direction : directions) {
+            int multiplier = 1;
+            int row_dir = direction[0];
+            int col_dir = direction[1];
+            row = myPosition.getRow() + row_dir;
+            col = myPosition.getColumn() + col_dir;
+            while(true) {
+                if (!checkInBounds(row, col)) { break; }
+                if (isPiece(board, row, col) && isFriend(board, row, col)) { break; }
+
+                ChessPosition endPosition = new ChessPosition(row, col);
+                move = new ChessMove(myPosition, endPosition, null);
+                moves.add(move);
+                if (isPiece(board, row, col) && !isFriend(board, row, col)) { break; }
+
+                multiplier += 1;
+                row = myPosition.getRow() + row_dir * multiplier;
+                col = myPosition.getColumn() + col_dir * multiplier;
+            }
+        }
+        return moves;
+    }
+
     private ArrayList<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
         ChessMove move;
@@ -242,6 +277,8 @@ public class ChessPiece {
             return knightMoves(board, myPosition);
         } else if (type == PieceType.PAWN) {
             return pawnMoves(board, myPosition);
+        } else if (type == PieceType.ROOK) {
+            return rookMoves(board, myPosition);
         }
 //        return bishopMoves(myPosition);
         return new ArrayList<ChessMove>();
