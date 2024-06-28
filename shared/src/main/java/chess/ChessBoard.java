@@ -56,52 +56,47 @@ public class ChessBoard {
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
+
+    private void resetBackHelper(ChessGame.TeamColor teamColor, int row, ChessPiece.PieceType[] side_pieces){
+
+        for (int i = 0; i < 3; i++) {
+            squares[row][i] = new ChessPiece(teamColor, side_pieces[i]);
+        }
+        squares[row][3] = new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
+        squares[row][4] = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
+        for (int i = 2; i >= 0; i--) {
+            squares[row][7-i] = new ChessPiece(teamColor, side_pieces[i]);
+        }
+    }
+
     public void resetBoard() {
+        ChessPiece.PieceType[] side_pieces = new ChessPiece.PieceType[3];
+        side_pieces[0] = ChessPiece.PieceType.ROOK;
+        side_pieces[1] = ChessPiece.PieceType.KNIGHT;
+        side_pieces[2] = ChessPiece.PieceType.BISHOP;
+
         for (int row = 0; row < 8; row++) {
 
-
-            ChessPiece.PieceType[] side_pieces = new ChessPiece.PieceType[3];
-            side_pieces[0] = ChessPiece.PieceType.ROOK;
-            side_pieces[1] = ChessPiece.PieceType.KNIGHT;
-            side_pieces[2] = ChessPiece.PieceType.BISHOP;
-
             if (row == 0) {
-                for (int i = 0; i < 3; i++) {
-                    squares[row][i] = new ChessPiece(ChessGame.TeamColor.WHITE, side_pieces[i]);
-                }
-                squares[row][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-                squares[row][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-                for (int i = 2; i >= 0; i--) {
-                    squares[row][7-i] = new ChessPiece(ChessGame.TeamColor.WHITE, side_pieces[i]);
-                }
-            }
-            if (row == 7) {
-                for (int i = 0; i < 3; i++) {
-                    squares[row][i] = new ChessPiece(ChessGame.TeamColor.BLACK, side_pieces[i]);
-                }
-                squares[row][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-                squares[row][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-                for (int i = 2; i >= 0; i--) {
-                    squares[row][7-i] = new ChessPiece(ChessGame.TeamColor.BLACK, side_pieces[i]);
-                }
-            }
-
-            // Pawns
-            if (row == 1) {
+                resetBackHelper(ChessGame.TeamColor.WHITE, row, side_pieces);
+            } else if (row == 1) {
                 for (int i = 0; i < 8; i++) {
                     squares[row][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+                }
+            } else if (row > 1 && row < 6) {
+                for (ChessPiece square : squares[row]) {
+                    square = null;
                 }
             } else if (row == 6) {
                 for (int i = 0; i < 8; i++) {
                     squares[row][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
                 }
+            } else if (row == 7) {
+                resetBackHelper(ChessGame.TeamColor.BLACK, row, side_pieces);
             }
 
-            if (row > 1 && row < 6) {
-                for (ChessPiece square : squares[row]) {
-                    square = null;
-                }
-            }
+
+
 
         }
     }
