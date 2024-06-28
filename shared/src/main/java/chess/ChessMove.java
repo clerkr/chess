@@ -43,7 +43,6 @@ public class ChessMove {
     // This is likely implemented incorrectly
     public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;
-
     }
 
     @Override

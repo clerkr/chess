@@ -165,6 +165,73 @@ public class ChessPiece {
         return moves;
     }
 
+    private ArrayList<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
+        ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
+        ChessMove move;
+        int row;
+        int col;
+        boolean on_start;
+        int mover;
+
+        if (pieceColor == ChessGame.TeamColor.WHITE) {
+            on_start = (myPosition.getRow() == 2);
+            mover = 1;
+        } else {
+            on_start = (myPosition.getRow() == 7);
+            mover = -1;
+        }
+
+        int[][] attack_directions = {
+                {1,-1},
+                {1,1}
+        };
+        for (int[] direction : attack_directions) {
+            int row_dir = direction[0] * mover;
+            int col_dir = direction[1];
+            row = myPosition.getRow() + row_dir;
+            col = myPosition.getColumn() + col_dir;
+            if (checkInBounds(row, col) &&
+                    isPiece(board, row, col) &&
+                    board.getPiece(new ChessPosition(row, col)).getTeamColor() != pieceColor
+            ) {
+                ChessPosition endPosition = new ChessPosition(row, col);
+                if (row == 1 || row == 8) {
+                    move = new ChessMove(myPosition, endPosition, PieceType.QUEEN);
+                } else {
+                    move = new ChessMove(myPosition, endPosition, null);
+                }
+                moves.add(move);
+            }
+        }
+        // Forward
+        row = myPosition.getRow() + mover;
+        col = myPosition.getColumn();
+        if (checkInBounds(row, col) && !isPiece(board, row, col)) {
+            ChessPosition endPosition = new ChessPosition(row, col);
+            if (row == 1 || row == 8) {
+                move = new ChessMove(myPosition, endPosition, PieceType.QUEEN);
+            } else {
+                move = new ChessMove(myPosition, endPosition, null);
+            }
+            moves.add(move);
+        }
+        // Forward 2x
+        if (on_start) {
+            row = myPosition.getRow() + mover*2;
+            if (!isPiece(board, row-mover, col) && !isPiece(board, row, col)) {
+                ChessPosition endPosition = new ChessPosition(row, col);
+                move = new ChessMove(myPosition, endPosition, null);
+                moves.add(move);
+            }
+        }
+
+
+
+
+
+        return moves;
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
 
         if (type == PieceType.BISHOP) {
@@ -173,6 +240,8 @@ public class ChessPiece {
             return kingMoves(board, myPosition);
         } else if (type == PieceType.KNIGHT) {
             return knightMoves(board, myPosition);
+        } else if (type == PieceType.PAWN) {
+            return pawnMoves(board, myPosition);
         }
 //        return bishopMoves(myPosition);
         return new ArrayList<ChessMove>();
