@@ -73,59 +73,64 @@ public class ChessPiece {
         ChessMove move;
         int row;
         int col;
-        // Up-Right Diagonal
-        row = myPosition.getRow() + 1;
-        col = myPosition.getColumn() + 1;
-        while(true) {
-            if (!checkInBounds(row, col)) { break; }
-            if (isPiece(board, row, col) && isFriend(board, row, col)) { break; }
-            ChessPosition endPosition = new ChessPosition(row, col);
-            move = new ChessMove(myPosition, endPosition, null);
-            moves.add(move);
-            if (isPiece(board, row, col) && !isFriend(board, row, col)) { break; }
-            row += 1;
-            col += 1;
-        }
-        // Up-Left Diagonal
-        row = myPosition.getRow() + 1;
-        col = myPosition.getColumn() - 1;
-        while(true) {
-            if (!checkInBounds(row, col)) { break; }
-            if (isPiece(board, row, col) && isFriend(board, row, col)) { break; }
-            ChessPosition endPosition = new ChessPosition(row, col);
-            move = new ChessMove(myPosition, endPosition, null);
-            moves.add(move);
-            if (isPiece(board, row, col) && !isFriend(board, row, col)) { break; }
-            row += 1;
-            col -= 1;
-        }
-        // Down-Left Diagonal
-        row = myPosition.getRow() - 1;
-        col = myPosition.getColumn() - 1;
-        while(true) {
-            if (!checkInBounds(row, col)) { break; }
-            if (isPiece(board, row, col) && isFriend(board, row, col)) { break; }
-            ChessPosition endPosition = new ChessPosition(row, col);
-            move = new ChessMove(myPosition, endPosition, null);
-            moves.add(move);
-            if (isPiece(board, row, col) && !isFriend(board, row, col)) { break; }
-            row -= 1;
-            col -= 1;
-        }
-        // Down-Right Diagonal
-        row = myPosition.getRow() - 1;
-        col = myPosition.getColumn() + 1;
-        while(true) {
-            if (!checkInBounds(row, col)) { break; }
-            if (isPiece(board, row, col) && isFriend(board, row, col)) { break; }
-            ChessPosition endPosition = new ChessPosition(row, col);
-            move = new ChessMove(myPosition, endPosition, null);
-            moves.add(move);
-            if (isPiece(board, row, col) && !isFriend(board, row, col)) { break; }
-            row -= 1;
-            col += 1;
-        }
 
+        int[][] directions = {
+                {1,1},      // Up-Right
+                {1,-1},     // Up-Left
+                {-1,-1},    // Down-Left
+                {-1,1},     // Down-Right
+        };
+        for (int[] direction : directions) {
+            int multiplier = 1;
+            int row_dir = direction[0];
+            int col_dir = direction[1];
+            row = myPosition.getRow() + row_dir;
+            col = myPosition.getColumn() + col_dir;
+            while(true) {
+                if (!checkInBounds(row, col)) { break; }
+                if (isPiece(board, row, col) && isFriend(board, row, col)) { break; }
+
+                ChessPosition endPosition = new ChessPosition(row, col);
+                move = new ChessMove(myPosition, endPosition, null);
+                moves.add(move);
+                if (isPiece(board, row, col) && !isFriend(board, row, col)) { break; }
+
+                multiplier += 1;
+                row = myPosition.getRow() + row_dir * multiplier;
+                col = myPosition.getColumn() + col_dir * multiplier;
+            }
+        }
+        return moves;
+    }
+
+    private ArrayList<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
+        ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
+        ChessMove move;
+        int row;
+        int col;
+
+        int[][] directions = {
+                {1,1},  // Up-Right
+                {1,0},  // Up
+                {1,-1}, // Up-Left
+                {0,-1}, // Left
+                {-1,-1},// Down-Left
+                {-1,0}, // Down
+                {-1,1}, // Down-Right
+                {0,1}  // Right
+        };
+
+        for (int[] direction : directions) {
+            row = myPosition.getRow() + direction[0];
+            col = myPosition.getColumn() + direction[1];
+            if (checkInBounds(row, col)) {
+                if (!isPiece(board, row, col) || (isPiece(board, row, col) && !isFriend(board, row, col))) {
+                    ChessPosition endPosition = new ChessPosition(row, col);
+                    move = new ChessMove(myPosition, endPosition, null);
+                    moves.add(move);
+                }
+            }
+        }
         return moves;
     }
 
@@ -133,6 +138,8 @@ public class ChessPiece {
 
         if (type == PieceType.BISHOP) {
             return bishopMoves(board, myPosition);
+        } else if (type == PieceType.KING) {
+            return kingMoves(board, myPosition);
         }
 //        return bishopMoves(myPosition);
         return new ArrayList<ChessMove>();
