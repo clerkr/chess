@@ -9,12 +9,12 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessMove {
-    private final ChessPosition startPosition;
-    private final ChessPosition endPosition;
-    private final ChessPiece.PieceType promotionPiece;
 
-    public ChessMove(ChessPosition startPosition,
-                     ChessPosition endPosition,
+    private ChessPosition startPosition;
+    private ChessPosition endPosition;
+    private ChessPiece.PieceType promotionPiece;
+
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
@@ -27,6 +27,7 @@ public class ChessMove {
     public ChessPosition getStartPosition() {
         return startPosition;
     }
+
     /**
      * @return ChessPosition of ending location
      */
@@ -40,8 +41,8 @@ public class ChessMove {
      *
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
-    // This is likely implemented incorrectly
     public ChessPiece.PieceType getPromotionPiece() {
+        if (promotionPiece == null) {return null;}
         return promotionPiece;
     }
 

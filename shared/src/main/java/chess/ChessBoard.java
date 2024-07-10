@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -12,24 +11,9 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    ChessPiece[][] squares = new ChessPiece[8][8];
 
-    public ChessBoard() {
-        
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessBoard that = (ChessBoard) o;
-        return Objects.deepEquals(squares, that.squares);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(squares);
-    }
+    public ChessBoard() {}
 
     /**
      * Adds a chess piece to the chessboard
@@ -56,50 +40,48 @@ public class ChessBoard {
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
-
-    private void resetBackHelper(ChessGame.TeamColor teamColor, int row, ChessPiece.PieceType[] side_pieces){
-
-        for (int i = 0; i < 3; i++) {
-            squares[row][i] = new ChessPiece(teamColor, side_pieces[i]);
-        }
-        squares[row][3] = new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
-        squares[row][4] = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
-        for (int i = 2; i >= 0; i--) {
-            squares[row][7-i] = new ChessPiece(teamColor, side_pieces[i]);
+    void backPieceSetter (int row, int col, ChessGame.TeamColor teamColor) {
+        if (col == 0 || col == 7) {
+            squares[row][col] = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
+        } else if (col == 1 || col == 6) {
+            squares[row][col] = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
+        } else if (col == 2 || col == 5) {
+            squares[row][col] = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
+        } else if (col == 3) {
+            squares[row][col] = new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
+        } else if (col == 4) {
+            squares[row][col] = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
         }
     }
-
     public void resetBoard() {
-        ChessPiece.PieceType[] side_pieces = new ChessPiece.PieceType[3];
-        side_pieces[0] = ChessPiece.PieceType.ROOK;
-        side_pieces[1] = ChessPiece.PieceType.KNIGHT;
-        side_pieces[2] = ChessPiece.PieceType.BISHOP;
-
-        for (int row = 0; row < 8; row++) {
-
-            if (row == 0) {
-                resetBackHelper(ChessGame.TeamColor.WHITE, row, side_pieces);
-            } else if (row == 1) {
-                for (int i = 0; i < 8; i++) {
-                    squares[row][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+        for (int col = 0; col < 8; col++) {
+            for (int row = 0; row < 8; row ++){
+                
+                if (row > 1 && row < 6) {
+                    squares[row][col] = null;
+                } else if (row == 1) {
+                    squares[row][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+                } else if (row == 6) {
+                    squares[row][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+                } else if (row == 0) {
+                    backPieceSetter(row, col, ChessGame.TeamColor.WHITE);
+                } else if (row == 7) {
+                    backPieceSetter(row, col, ChessGame.TeamColor.BLACK);
                 }
-            } else if (row > 1 && row < 6) {
-                for (ChessPiece square : squares[row]) {
-                    square = null;
-                }
-            } else if (row == 6) {
-                for (int i = 0; i < 8; i++) {
-                    squares[row][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-                }
-            } else if (row == 7) {
-                resetBackHelper(ChessGame.TeamColor.BLACK, row, side_pieces);
             }
-
-
-
-
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(squares, that.squares);
+    }
 
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(squares);
+    }
 }
