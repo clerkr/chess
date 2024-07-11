@@ -52,11 +52,12 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessBoard tempBoard;
+        // Preserves teamTurn state so that the makeMove() manipulation of teamTurn is imperminant
         TeamColor tempTeamColor = teamTurn;
         ChessPiece piece = gameBoard.getPiece(startPosition);
 
         Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
-        ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
 
        for (ChessMove move : moves) {
            setTeamTurn(piece.getTeamColor());
@@ -65,15 +66,37 @@ public class ChessGame {
                makeMove(move);
                validMoves.add(move);
            } catch (InvalidMoveException ex) {
-
+                System.out.println(ex + ": Move invalid");
            }
            gameBoard = new ChessBoard(tempBoard);
        }
+
+       // Reset teamTurn
        setTeamTurn(tempTeamColor);
        return validMoves;
     }
 
+    public void pawnMoveMaker(ChessMove move) throws InvalidMoveException {
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece.PieceType promo = move.getPromotionPiece();
+        ChessPiece piece = gameBoard.getPiece(start);
 
+        gameBoard.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+        gameBoard.removePiece(move.getStartPosition());
+
+        if (gameBoard.getPiece(start) != null) {
+            throw new InvalidMoveException("After move, a piece is still present in the start position");
+        }
+        ChessPiece endPiece = gameBoard.getPiece(end);
+        if (endPiece == null) {
+            throw new InvalidMoveException("After move, no piece found at the end position");
+        } else if (endPiece.getPieceType() != promo) {
+            throw new InvalidMoveException("Found piece at end position is not the correct piece type");
+        } else if (endPiece.getTeamColor() != piece.getTeamColor()) {
+            throw new InvalidMoveException("Found piece at end position is the wrong team color");
+        }
+    }
     /**
      * Makes a move in a chess game
      *
@@ -97,20 +120,7 @@ public class ChessGame {
         }
 
         if (piece.getPieceType() == ChessPiece.PieceType.PAWN && promo != null) {
-            gameBoard.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
-            gameBoard.removePiece(move.getStartPosition());
-
-            if (gameBoard.getPiece(start) != null) {
-                throw new InvalidMoveException("After move, a piece is still present in the start position");
-            }
-            ChessPiece endPiece = gameBoard.getPiece(end);
-            if (endPiece == null) {
-                throw new InvalidMoveException("After move, no piece found at the end position");
-            } else if (endPiece.getPieceType() != promo) {
-                throw new InvalidMoveException("Found piece at end position is not the correct piece type");
-            } else if (endPiece.getTeamColor() != piece.getTeamColor()) {
-                throw new InvalidMoveException("Found piece at end position is the wrong team color");
-            }
+            pawnMoveMaker(move);
         } else {
             gameBoard.addPiece(move.getEndPosition(), piece);
             gameBoard.removePiece(move.getStartPosition());
