@@ -91,7 +91,7 @@ public class ChessGame {
             throw new InvalidMoveException("This move leads to check");
         }
 
-        TeamColor teamColor = (teamTurn == TeamColor.WHITE) ? (teamTurn = TeamColor.BLACK) : (teamTurn = TeamColor.WHITE);
+        teamTurn = (teamTurn == TeamColor.WHITE) ? (TeamColor.BLACK) : (TeamColor.WHITE);
     }
 
 
