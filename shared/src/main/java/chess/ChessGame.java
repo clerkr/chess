@@ -3,6 +3,7 @@ package chess;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -40,57 +41,36 @@ public class ChessGame {
         BLACK
     }
 
-    private ChessBoard copyGameBoard() {
-        return new ChessBoard(gameBoard);
-    }
-
-    private void mover (ChessBoard board, ChessPiece piece, ChessMove move) throws InvalidMoveException {
-
-        ChessPosition start = move.getStartPosition();
-        ChessPosition end = move.getEndPosition();
-        ChessPiece.PieceType promo = move.getPromotionPiece();
-
-        if (piece.getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null) {
-            board.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
-            board.removePiece(move.getStartPosition());
-
-            if (board.getPiece(start) != null) {
-                throw new InvalidMoveException("After move, a piece is still present in the start position");
-            }
-            ChessPiece endPiece = board.getPiece(end);
-            if (endPiece == null) {
-                throw new InvalidMoveException("After move, no piece found at the end position");
-            } else if (endPiece.getPieceType() != promo) {
-                throw new InvalidMoveException("Found piece at end position is not the correct piece type");
-            } else if (endPiece.getTeamColor() != piece.getTeamColor()) {
-                throw new InvalidMoveException("Found piece at end position is the wrong team color");
-            }
-
-        } else {
-            board.addPiece(move.getEndPosition(), piece);
-            board.removePiece(move.getStartPosition());
-
-        }
 
 
-
-
-    }
     /**
-     * Gets a valid moves for a piece at the given location
+     * Gets a collection of valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        ChessBoard tempBoard;
+        TeamColor tempTeamColor = teamTurn;
         ChessPiece piece = gameBoard.getPiece(startPosition);
-        Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
 
-        if (isInCheck(piece.getTeamColor())) {
-            return moves;
-        }
-        return new ArrayList<ChessMove>();
+        Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
+        ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
+
+       for (ChessMove move : moves) {
+           setTeamTurn(piece.getTeamColor());
+           tempBoard = new ChessBoard(gameBoard);
+           try {
+               makeMove(move);
+               validMoves.add(move);
+           } catch (InvalidMoveException ex) {
+
+           }
+           gameBoard = new ChessBoard(tempBoard);
+       }
+       setTeamTurn(tempTeamColor);
+       return validMoves;
     }
 
 
@@ -101,32 +81,51 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessBoard tempBoard = copyGameBoard();
+        ChessBoard tempBoard = new ChessBoard(gameBoard);
         ChessPosition start = move.getStartPosition();
-        if (gameBoard.getPiece(start) == null) {
-            throw new InvalidMoveException("Attempting to move a null piece");
-        }
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promo = move.getPromotionPiece();
 
         ChessPiece piece = gameBoard.getPiece(start);
-        if (piece.getTeamColor() != teamTurn) {
-            throw new InvalidMoveException("Move attempt out of turn");
-        }
-        if (gameBoard.getPiece(start) == null) {
-            throw new InvalidMoveException("No piece at move start position");
-        }
-        ArrayList<ChessMove> moves = (ArrayList<ChessMove>) piece.pieceMoves(gameBoard, start);
-        if (!moves.contains(move)) {
-            throw new InvalidMoveException("This is an invalid move");
-        }
-        mover(gameBoard, piece, move);
-        if (isInCheck(piece.getTeamColor())) {
-            setBoard(tempBoard);
-            throw new InvalidMoveException("This move leads to check");
+        if (gameBoard.getPiece(start) == null) { throw new InvalidMoveException("Attempting to move a null piece"); }
+        ArrayList<ChessMove> piecePossibleMoves = (ArrayList<ChessMove>) piece.pieceMoves(gameBoard, start);
+
+        if (!piecePossibleMoves.contains(move)) {
+            throw new InvalidMoveException("This is not a possible move for this piece");
+        } else if (piece.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException("Out of turn move attempt");
         }
 
-        teamTurn = (teamTurn == TeamColor.WHITE) ? (TeamColor.BLACK) : (TeamColor.WHITE);
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN && promo != null) {
+            gameBoard.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+            gameBoard.removePiece(move.getStartPosition());
+
+            if (gameBoard.getPiece(start) != null) {
+                throw new InvalidMoveException("After move, a piece is still present in the start position");
+            }
+            ChessPiece endPiece = gameBoard.getPiece(end);
+            if (endPiece == null) {
+                throw new InvalidMoveException("After move, no piece found at the end position");
+            } else if (endPiece.getPieceType() != promo) {
+                throw new InvalidMoveException("Found piece at end position is not the correct piece type");
+            } else if (endPiece.getTeamColor() != piece.getTeamColor()) {
+                throw new InvalidMoveException("Found piece at end position is the wrong team color");
+            }
+        } else {
+            gameBoard.addPiece(move.getEndPosition(), piece);
+            gameBoard.removePiece(move.getStartPosition());
+        }
+
+        if (isInCheck(piece.getTeamColor())) {
+//            gameBoard = new ChessBoard(tempBoard); // maybe move this one out?
+            throw new InvalidMoveException("The move not permissible as check results");
+        }
+
+        if ((teamTurn == TeamColor.WHITE)) {
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
     }
 
 
@@ -174,6 +173,20 @@ public class ChessGame {
         return enemyAttackPositions.contains(kingPosition);
     }
 
+    private boolean isValidatedMove (TeamColor teamColor) {
+        Map<ChessPiece, ArrayList<ChessPosition>> pieces = (HashMap<ChessPiece, ArrayList<ChessPosition>>) gameBoard.getPieces();
+        for (ChessPiece piece : pieces.keySet()) {
+            for (ChessPosition piecePosition : pieces.get(piece)) {
+                if (piece.getTeamColor() == teamColor) {
+                    ArrayList<ChessMove> validatedMoves = (ArrayList<ChessMove>) validMoves(piecePosition);
+                    if (!validatedMoves.isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
     /**
      * Determines if the given team is in checkmate
      *
@@ -181,7 +194,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) { return false; }
+        return (isValidatedMove(teamColor));
     }
 
     /**
@@ -192,7 +206,8 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) { return false; }
+        return (isValidatedMove(teamColor));
     }
 
     /**
