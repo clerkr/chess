@@ -2,7 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Arrays;
+import java.util.Map;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -12,27 +12,24 @@ import java.util.Arrays;
  */
 public class ChessGame {
 
-    ChessBoard gameBoard;
+    ChessBoard gameBoard = new ChessBoard();
+    TeamColor teamTurn = TeamColor.WHITE;
 
     public ChessGame() {
-        this.gameBoard = new ChessBoard();
+        gameBoard.resetBoard();
     }
 
     /**
      * @return Which team's turn it is
      */
-    public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
-    }
+    public TeamColor getTeamTurn() { return teamTurn; }
 
     /**
      * Set's which teams turn it is
      *
      * @param team the team whose turn it is
      */
-    public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
-    }
+    public void setTeamTurn(TeamColor team) { teamTurn = team; }
 
     /**
      * Enum identifying the 2 possible teams in a chess game
@@ -40,6 +37,10 @@ public class ChessGame {
     public enum TeamColor {
         WHITE,
         BLACK
+    }
+
+    private ChessBoard copyGameBoard() {
+        return new ChessBoard(gameBoard);
     }
 
     /**
@@ -65,27 +66,39 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+
+    private void loadEnemyAttackPositions (
+            ChessPosition enemyPosition,
+            ArrayList<ChessPosition> positions ) {
+        ChessPiece enemy = gameBoard.getPiece(enemyPosition);
+        Collection<ChessMove> attackMoves = enemy.pieceMoves(gameBoard, enemyPosition);
+        for (ChessMove attackMove : attackMoves) {
+            ChessPosition attackPosition = attackMove.getEndPosition();
+            positions.add(attackPosition);
+        }
+    }
     /**
      * Determines if the given team is in check
      *
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    private ChessBoard copyGameBoard() {
-        return new ChessBoard(gameBoard);
+    public boolean isInCheck(TeamColor teamColor) {
+        Map<ChessPiece, ArrayList<ChessPosition>> pieces = gameBoard.getPieces();
+        ArrayList<ChessPosition> enemyAttackPositions = new ArrayList<ChessPosition>();
+        
+        ChessPosition kingPosition = null;
+        for (ChessPiece piece : pieces.keySet()) {
+            if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
+                kingPosition = pieces.get(piece).getFirst();
+            } else if (piece.getTeamColor() != teamColor) {
+                for (ChessPosition enemyPosition : pieces.get(piece)) {
+                    loadEnemyAttackPositions(enemyPosition, enemyAttackPositions);
+                }
+            }
+        }
+        return enemyAttackPositions.contains(kingPosition);
     }
-
-//    public boolean isInCheck(TeamColor teamColor) {
-//        ChessBoard tempGameBoard = copyGameBoard();
-//        Collection<ChessPiece> pieces = tempGameBoard.getPieces();
-//        // get king position
-//
-//        for (ChessPiece piece : pieces) {
-//            if (piece.pieceMoves(board))
-//        }
-//
-//
-//    }
 
     /**
      * Determines if the given team is in checkmate
@@ -113,7 +126,7 @@ public class ChessGame {
      *
      * @param board the new board to use
      */
-    public void setBoard(ChessBoard board) { gameBoard = board; }
+    public void setBoard(ChessBoard board) { gameBoard = new ChessBoard(board); }
 
     /**
      * Gets the current chessboard

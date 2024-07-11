@@ -1,5 +1,6 @@
 package chess;
 
+import java.sql.Array;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.ArrayList;
@@ -23,7 +24,11 @@ public class ChessBoard {
         squares = new ChessPiece[8][8];
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                squares[row][col] = new ChessPiece(other.squares[row][col]);
+                if (other.squares[row][col] == null) {
+                    squares[row][col] = null;
+                } else {
+                    squares[row][col] = new ChessPiece(other.squares[row][col]);
+                }
             }
         }
     }
@@ -49,18 +54,25 @@ public class ChessBoard {
         return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
-//    public Collection<ChessPiece> getPieces () {
-//        Map<ChessPiece, ChessPosition[]> pieces = new HashMap<ChessPiece, ChessPosition[]>();
-//        for (int row = 0; row < 8; row++) {
-//            for (int col = 0; col < 8; col++) {
-//                ChessPiece piece = squares[row][col];
-//                if (piece != null){
-//                    pieces.add(piece);
-//                }
-//            }
-//        }
-//        return pieces;
-//    }
+    public Map<ChessPiece, ArrayList<ChessPosition>> getPieces () {
+        Map<ChessPiece, ArrayList<ChessPosition>> pieces = new HashMap<>();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = squares[row][col];
+                ChessPosition position = new ChessPosition(row+1, col+1);
+                if (piece == null){ continue; }
+                if (!pieces.containsKey(piece)) {
+                    ArrayList<ChessPosition> position_list = new ArrayList<ChessPosition>();
+                    position_list.add(position);
+                    pieces.put(piece, position_list);
+                } else {
+                    pieces.get(piece).add(position);
+                }
+            }
+        }
+        return pieces;
+    }
+
 
     /**
      * Sets the board to the default starting board
