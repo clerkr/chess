@@ -66,7 +66,7 @@ public class ChessGame {
                makeMove(move);
                validMoves.add(move);
            } catch (InvalidMoveException ex) {
-                System.out.println(ex + ": Move invalid");
+                System.out.println(ex);
            }
            gameBoard = new ChessBoard(tempBoard);
        }
@@ -76,14 +76,16 @@ public class ChessGame {
        return validMoves;
     }
 
-    public void pawnMoveMaker(ChessMove move) throws InvalidMoveException {
-        ChessPosition start = move.getStartPosition();
-        ChessPosition end = move.getEndPosition();
-        ChessPiece.PieceType promo = move.getPromotionPiece();
-        ChessPiece piece = gameBoard.getPiece(start);
-
-        gameBoard.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+    private void moveMaker (ChessMove move, ChessPiece piece) {
+        gameBoard.addPiece(move.getEndPosition(), piece);
         gameBoard.removePiece(move.getStartPosition());
+    }
+    private void pawnMoveMaker(ChessPiece piece,
+                               ChessPosition start,
+                               ChessPosition end,
+                               ChessPiece.PieceType promo) throws InvalidMoveException {
+        gameBoard.addPiece(end, new ChessPiece(piece.getTeamColor(), promo));
+        gameBoard.removePiece(start);
 
         if (gameBoard.getPiece(start) != null) {
             throw new InvalidMoveException("After move, a piece is still present in the start position");
@@ -108,7 +110,6 @@ public class ChessGame {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promo = move.getPromotionPiece();
-
         ChessPiece piece = gameBoard.getPiece(start);
         if (gameBoard.getPiece(start) == null) { throw new InvalidMoveException("Attempting to move a null piece"); }
         ArrayList<ChessMove> piecePossibleMoves = (ArrayList<ChessMove>) piece.pieceMoves(gameBoard, start);
@@ -120,10 +121,9 @@ public class ChessGame {
         }
 
         if (piece.getPieceType() == ChessPiece.PieceType.PAWN && promo != null) {
-            pawnMoveMaker(move);
+            pawnMoveMaker(piece, start, end, promo);
         } else {
-            gameBoard.addPiece(move.getEndPosition(), piece);
-            gameBoard.removePiece(move.getStartPosition());
+            moveMaker(move, piece);
         }
 
         if (isInCheck(piece.getTeamColor())) {
