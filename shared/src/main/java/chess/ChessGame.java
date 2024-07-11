@@ -115,31 +115,34 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessPosition start = move.getStartPosition();
-        ChessPosition end = move.getEndPosition();
-        ChessPiece.PieceType promo = move.getPromotionPiece();
-        ChessPiece piece = gameBoard.getPiece(start);
-        if (piece == null) { throw new InvalidMoveException("Attempting to move a null piece"); }
-        ArrayList<ChessMove> piecePossibleMoves = (ArrayList<ChessMove>) piece.pieceMoves(gameBoard, start);
 
+        ChessPiece piece = gameBoard.getPiece(move.getStartPosition());
+        if (piece == null) { throw new InvalidMoveException("Attempting to move a null piece"); }
+
+        Collection<ChessMove> piecePossibleMoves = piece.pieceMoves(gameBoard, move.getStartPosition());
         if (!piecePossibleMoves.contains(move)) {
             throw new InvalidMoveException("This is not a possible move for this piece");
-        } else if (piece.getTeamColor() != teamTurn) {
+        }
+
+        if (piece.getTeamColor() != teamTurn) {
             throw new InvalidMoveException("Out of turn move attempt");
         }
 
         ChessBoard tempBoard = new ChessBoard(gameBoard);
-        if (piece.getPieceType() == ChessPiece.PieceType.PAWN && promo != null) {
-            handlePawnPromotion(piece, start, end, promo);
-        } else {
-            movePiece(move, piece);
+        try {
+            if (piece.getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null) {
+                handlePawnPromotion(piece, move.getStartPosition(), move.getEndPosition(), move.getPromotionPiece());
+            } else {
+                movePiece(move, piece);
+            }
+            if (isInCheck(piece.getTeamColor())) {
+                throw new InvalidMoveException("The move not permissible as it results in check");
+            }
+        } finally {
+            if (isInCheck(piece.getTeamColor())) {
+                gameBoard = new ChessBoard(tempBoard); // Reverts move to previous board condition if it results in Check
+            }
         }
-
-        if (isInCheck(piece.getTeamColor())) {
-            gameBoard = new ChessBoard(tempBoard); // Reverts move to previous board condition if it results in Check
-            throw new InvalidMoveException("The move not permissible as it results in check");
-        }
-
         invertTeamTurn();
     }
 
