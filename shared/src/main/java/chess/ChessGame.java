@@ -44,9 +44,37 @@ public class ChessGame {
         return new ChessBoard(gameBoard);
     }
 
-    private void mover (ChessBoard board, ChessPiece piece, ChessMove move) {
-        board.addPiece(move.getEndPosition(), piece);
-        board.removePiece(move.getStartPosition());
+    private void mover (ChessBoard board, ChessPiece piece, ChessMove move) throws InvalidMoveException {
+
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece.PieceType promo = move.getPromotionPiece();
+
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null) {
+            board.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+            board.removePiece(move.getStartPosition());
+
+            if (board.getPiece(start) != null) {
+                throw new InvalidMoveException("After move, a piece is still present in the start position");
+            }
+            ChessPiece endPiece = board.getPiece(end);
+            if (endPiece == null) {
+                throw new InvalidMoveException("After move, no piece found at the end position");
+            } else if (endPiece.getPieceType() != promo) {
+                throw new InvalidMoveException("Found piece at end position is not the correct piece type");
+            } else if (endPiece.getTeamColor() != piece.getTeamColor()) {
+                throw new InvalidMoveException("Found piece at end position is the wrong team color");
+            }
+
+        } else {
+            board.addPiece(move.getEndPosition(), piece);
+            board.removePiece(move.getStartPosition());
+
+        }
+
+
+
+
     }
     /**
      * Gets a valid moves for a piece at the given location
@@ -74,14 +102,21 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessBoard tempBoard = copyGameBoard();
-        ChessPiece piece = gameBoard.getPiece(move.getStartPosition());
+        ChessPosition start = move.getStartPosition();
+        if (gameBoard.getPiece(start) == null) {
+            throw new InvalidMoveException("Attempting to move a null piece");
+        }
+        ChessPosition end = move.getEndPosition();
+        ChessPiece.PieceType promo = move.getPromotionPiece();
+
+        ChessPiece piece = gameBoard.getPiece(start);
         if (piece.getTeamColor() != teamTurn) {
             throw new InvalidMoveException("Move attempt out of turn");
         }
-        if (gameBoard.getPiece(move.getStartPosition()) == null) {
+        if (gameBoard.getPiece(start) == null) {
             throw new InvalidMoveException("No piece at move start position");
         }
-        ArrayList<ChessMove> moves = (ArrayList<ChessMove>) piece.pieceMoves(gameBoard, move.getStartPosition());
+        ArrayList<ChessMove> moves = (ArrayList<ChessMove>) piece.pieceMoves(gameBoard, start);
         if (!moves.contains(move)) {
             throw new InvalidMoveException("This is an invalid move");
         }
