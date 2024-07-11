@@ -1,5 +1,6 @@
 package chess;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -43,6 +44,10 @@ public class ChessGame {
         return new ChessBoard(gameBoard);
     }
 
+    private void mover (ChessBoard board, ChessPiece piece, ChessMove move) {
+        board.addPiece(move.getEndPosition(), piece);
+        board.removePiece(move.getStartPosition());
+    }
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -53,8 +58,13 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = gameBoard.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
-        return moves;
+
+        if (isInCheck(piece.getTeamColor())) {
+            return moves;
+        }
+        return new ArrayList<ChessMove>();
     }
+
 
     /**
      * Makes a move in a chess game
@@ -63,19 +73,57 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessBoard tempBoard = copyGameBoard();
+        ChessPiece piece = gameBoard.getPiece(move.getStartPosition());
+        if (piece.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException("Move attempt out of turn");
+        }
+        if (gameBoard.getPiece(move.getStartPosition()) == null) {
+            throw new InvalidMoveException("No piece at move start position");
+        }
+        ArrayList<ChessMove> moves = (ArrayList<ChessMove>) piece.pieceMoves(gameBoard, move.getStartPosition());
+        if (!moves.contains(move)) {
+            throw new InvalidMoveException("This is an invalid move");
+        }
+        mover(gameBoard, piece, move);
+        if (isInCheck(piece.getTeamColor())) {
+            setBoard(tempBoard);
+            throw new InvalidMoveException("This move leads to check");
+        }
+
+        TeamColor teamColor = (teamTurn == TeamColor.WHITE) ? (teamTurn = TeamColor.BLACK) : (teamTurn = TeamColor.WHITE);
     }
 
 
-    private void loadEnemyAttackPositions (
-            ChessPosition enemyPosition,
-            ArrayList<ChessPosition> positions ) {
-        ChessPiece enemy = gameBoard.getPiece(enemyPosition);
-        Collection<ChessMove> attackMoves = enemy.pieceMoves(gameBoard, enemyPosition);
-        for (ChessMove attackMove : attackMoves) {
-            ChessPosition attackPosition = attackMove.getEndPosition();
-            positions.add(attackPosition);
+    private ChessPosition getKingPosition (
+            TeamColor team,
+            Map<ChessPiece, ArrayList<ChessPosition>> pieces) {
+        for (ChessPiece piece : pieces.keySet()) {
+            if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == team) {
+                return pieces.get(piece).getFirst();
+            }
         }
+        return new ChessPosition(1,1); // This should never return since there should always be a team king
+    }
+    private ArrayList<ChessPosition> getEnemyAttackPositions (
+            TeamColor team,
+            Map<ChessPiece, ArrayList<ChessPosition>> pieces) {
+
+        ArrayList<ChessPosition> enemyAttackPositions = new ArrayList<ChessPosition>();
+        for (ChessPiece piece : pieces.keySet()) {
+            if (piece.getTeamColor() != team) {
+                for (ChessPosition enemyPosition : pieces.get(piece)) {
+                    ChessPiece enemy = gameBoard.getPiece(enemyPosition);
+                    Collection<ChessMove> attackMoves = enemy.pieceMoves(gameBoard, enemyPosition);
+                    for (ChessMove attackMove : attackMoves) {
+                        ChessPosition attackPosition = attackMove.getEndPosition();
+                        enemyAttackPositions.add(attackPosition);
+                    }
+                }
+            }
+        }
+
+        return enemyAttackPositions;
     }
     /**
      * Determines if the given team is in check
@@ -85,18 +133,9 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         Map<ChessPiece, ArrayList<ChessPosition>> pieces = gameBoard.getPieces();
-        ArrayList<ChessPosition> enemyAttackPositions = new ArrayList<ChessPosition>();
         
-        ChessPosition kingPosition = null;
-        for (ChessPiece piece : pieces.keySet()) {
-            if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
-                kingPosition = pieces.get(piece).getFirst();
-            } else if (piece.getTeamColor() != teamColor) {
-                for (ChessPosition enemyPosition : pieces.get(piece)) {
-                    loadEnemyAttackPositions(enemyPosition, enemyAttackPositions);
-                }
-            }
-        }
+        ChessPosition kingPosition = getKingPosition(teamColor, pieces);
+        ArrayList<ChessPosition> enemyAttackPositions = getEnemyAttackPositions(teamColor, pieces);
         return enemyAttackPositions.contains(kingPosition);
     }
 
