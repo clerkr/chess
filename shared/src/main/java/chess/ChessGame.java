@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Arrays;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,8 +12,10 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    public ChessGame() {
+    ChessBoard gameBoard;
 
+    public ChessGame() {
+        this.gameBoard = new ChessBoard();
     }
 
     /**
@@ -46,7 +50,9 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = gameBoard.getPiece(startPosition);
+        Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
+        return moves;
     }
 
     /**
@@ -65,9 +71,21 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+    private ChessBoard copyGameBoard() {
+        return new ChessBoard(gameBoard);
     }
+
+//    public boolean isInCheck(TeamColor teamColor) {
+//        ChessBoard tempGameBoard = copyGameBoard();
+//        Collection<ChessPiece> pieces = tempGameBoard.getPieces();
+//        // get king position
+//
+//        for (ChessPiece piece : pieces) {
+//            if (piece.pieceMoves(board))
+//        }
+//
+//
+//    }
 
     /**
      * Determines if the given team is in checkmate
@@ -95,16 +113,12 @@ public class ChessGame {
      *
      * @param board the new board to use
      */
-    public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
-    }
+    public void setBoard(ChessBoard board) { gameBoard = board; }
 
     /**
      * Gets the current chessboard
      *
      * @return the chessboard
      */
-    public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
-    }
+    public ChessBoard getBoard() { return gameBoard; }
 }

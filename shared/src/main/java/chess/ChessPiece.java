@@ -20,6 +20,11 @@ public class ChessPiece {
         this.type = type;
     }
 
+    public ChessPiece(ChessPiece other) {
+        this.pieceColor = other.pieceColor;
+        this.type = other.type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,19 +72,18 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
 
-    boolean inBoundsCheck(int row, int col) {
+    private boolean inBoundsCheck(int row, int col) {
         return (row >= 1 && row <= 8 && col >= 1 && col <= 8);
     }
-    boolean isPiece (ChessBoard board, int row, int col) {
+    private boolean isPiece (ChessBoard board, int row, int col) {
         if (!inBoundsCheck(row, col)) { return false;}
         return board.getPiece(new ChessPosition(row, col)) != null;
     }
-    boolean isFriend (ChessBoard board, int row, int col) {
+    private boolean isFriend (ChessBoard board, int row, int col) {
         if (!inBoundsCheck(row, col)) { return false;}
         return board.getPiece(new ChessPosition(row, col)).pieceColor == pieceColor;
     }
-
-    void slidingMove (ArrayList<ChessMove> moves,
+    private void slidingMove (ArrayList<ChessMove> moves,
                       ChessBoard board,
                       ChessPosition myPosition,
                       int[][] directions) {
@@ -110,8 +114,7 @@ public class ChessPiece {
             }
         }
     }
-
-    void singleMove (ArrayList<ChessMove> moves,
+    private void singleMove (ArrayList<ChessMove> moves,
                       ChessBoard board,
                       ChessPosition myPosition,
                       int[][] directions) {
@@ -135,7 +138,7 @@ public class ChessPiece {
         }
     }
 
-    void pawnPromoter (ArrayList<ChessMove> moves,
+    private void pawnPromoter (ArrayList<ChessMove> moves,
                        ChessPosition myPosition,
                        ChessPosition endPosition) {
         moves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
@@ -143,7 +146,7 @@ public class ChessPiece {
         moves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
         moves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
     }
-    ArrayList<ChessMove> pawnMoves (ChessBoard board, ChessPosition myPosition) {
+    private ArrayList<ChessMove> pawnMoves (ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
         int direction;
         int initial_row;
@@ -206,7 +209,7 @@ public class ChessPiece {
         return moves;
     }
 
-    ArrayList<ChessMove> rookMoves (ChessBoard board, ChessPosition myPosition) {
+    private ArrayList<ChessMove> rookMoves (ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
         int[][] directions = {
 
@@ -223,7 +226,7 @@ public class ChessPiece {
         return moves;
     }
 
-    ArrayList<ChessMove> knightMoves (ChessBoard board, ChessPosition myPosition) {
+    private ArrayList<ChessMove> knightMoves (ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
         int[][] directions = {
                 {2,1},
@@ -240,7 +243,7 @@ public class ChessPiece {
         return moves;
     }
 
-    ArrayList<ChessMove> bishopMoves (ChessBoard board, ChessPosition myPosition) {
+    private ArrayList<ChessMove> bishopMoves (ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
         int[][] directions = {
                 {1,1},
@@ -253,7 +256,7 @@ public class ChessPiece {
         return moves;
     }
 
-    ArrayList<ChessMove> queenMoves (ChessBoard board, ChessPosition myPosition) {
+    private ArrayList<ChessMove> queenMoves (ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
         int[][] directions = {
                 {1,1},
@@ -270,7 +273,7 @@ public class ChessPiece {
         return moves;
     }
 
-    ArrayList<ChessMove> kingMoves (ChessBoard board, ChessPosition myPosition) {
+    private ArrayList<ChessMove> kingMoves (ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
         int[][] directions = {
                 {1,1},

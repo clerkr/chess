@@ -2,6 +2,10 @@ package chess;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -14,6 +18,15 @@ public class ChessBoard {
     ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {}
+
+    public ChessBoard(ChessBoard other) {
+        squares = new ChessPiece[8][8];
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                squares[row][col] = new ChessPiece(other.squares[row][col]);
+            }
+        }
+    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -35,6 +48,19 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         return squares[position.getRow() - 1][position.getColumn() - 1];
     }
+
+//    public Collection<ChessPiece> getPieces () {
+//        Map<ChessPiece, ChessPosition[]> pieces = new HashMap<ChessPiece, ChessPosition[]>();
+//        for (int row = 0; row < 8; row++) {
+//            for (int col = 0; col < 8; col++) {
+//                ChessPiece piece = squares[row][col];
+//                if (piece != null){
+//                    pieces.add(piece);
+//                }
+//            }
+//        }
+//        return pieces;
+//    }
 
     /**
      * Sets the board to the default starting board
