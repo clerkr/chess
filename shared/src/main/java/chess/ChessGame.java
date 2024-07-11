@@ -1,6 +1,5 @@
 package chess;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -76,28 +75,38 @@ public class ChessGame {
        return validMoves;
     }
 
-    private void moveMaker (ChessMove move, ChessPiece piece) {
+    private void invertTeamTurn() {
+        if ((teamTurn == TeamColor.WHITE)) {
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
+    }
+    private void movePiece(ChessMove move, ChessPiece piece) {
         gameBoard.addPiece(move.getEndPosition(), piece);
         gameBoard.removePiece(move.getStartPosition());
     }
-    private void pawnMoveMaker(ChessPiece piece,
-                               ChessPosition start,
-                               ChessPosition end,
-                               ChessPiece.PieceType promo) throws InvalidMoveException {
+    private void validatePawnPromoEndState(ChessPiece startPiece,
+                                           ChessPiece endPiece,
+                                           ChessPiece.PieceType promo) throws InvalidMoveException{
+        if (endPiece == null ||
+                endPiece.getPieceType() != promo ||
+                endPiece.getTeamColor() != startPiece.getTeamColor()) {
+            throw new InvalidMoveException("End state pawn promotion issue: Expected a %s %s but got %s %s",
+                    startPiece.getTeamColor(), promo,
+                    endPiece == null ? "none" : endPiece.getTeamColor(), endPiece == null ? "none" : endPiece.getPieceType());
+        }
+    }
+    private void handlePawnPromotion(ChessPiece piece,
+                                     ChessPosition start,
+                                     ChessPosition end,
+                                     ChessPiece.PieceType promo) throws InvalidMoveException {
         gameBoard.addPiece(end, new ChessPiece(piece.getTeamColor(), promo));
         gameBoard.removePiece(start);
-
         if (gameBoard.getPiece(start) != null) {
             throw new InvalidMoveException("After move, a piece is still present in the start position");
         }
-        ChessPiece endPiece = gameBoard.getPiece(end);
-        if (endPiece == null) {
-            throw new InvalidMoveException("After move, no piece found at the end position");
-        } else if (endPiece.getPieceType() != promo) {
-            throw new InvalidMoveException("Found piece at end position is not the correct piece type");
-        } else if (endPiece.getTeamColor() != piece.getTeamColor()) {
-            throw new InvalidMoveException("Found piece at end position is the wrong team color");
-        }
+        validatePawnPromoEndState(piece, gameBoard.getPiece(end), promo);
     }
     /**
      * Makes a move in a chess game
@@ -106,12 +115,11 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessBoard tempBoard = new ChessBoard(gameBoard);
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece.PieceType promo = move.getPromotionPiece();
         ChessPiece piece = gameBoard.getPiece(start);
-        if (gameBoard.getPiece(start) == null) { throw new InvalidMoveException("Attempting to move a null piece"); }
+        if (piece == null) { throw new InvalidMoveException("Attempting to move a null piece"); }
         ArrayList<ChessMove> piecePossibleMoves = (ArrayList<ChessMove>) piece.pieceMoves(gameBoard, start);
 
         if (!piecePossibleMoves.contains(move)) {
@@ -120,22 +128,19 @@ public class ChessGame {
             throw new InvalidMoveException("Out of turn move attempt");
         }
 
+        ChessBoard tempBoard = new ChessBoard(gameBoard);
         if (piece.getPieceType() == ChessPiece.PieceType.PAWN && promo != null) {
-            pawnMoveMaker(piece, start, end, promo);
+            handlePawnPromotion(piece, start, end, promo);
         } else {
-            moveMaker(move, piece);
+            movePiece(move, piece);
         }
 
         if (isInCheck(piece.getTeamColor())) {
-//            gameBoard = new ChessBoard(tempBoard); // maybe move this one out?
-            throw new InvalidMoveException("The move not permissible as check results");
+            gameBoard = new ChessBoard(tempBoard); // Reverts move to previous board condition if it results in Check
+            throw new InvalidMoveException("The move not permissible as it results in check");
         }
 
-        if ((teamTurn == TeamColor.WHITE)) {
-            setTeamTurn(TeamColor.BLACK);
-        } else {
-            setTeamTurn(TeamColor.WHITE);
-        }
+        invertTeamTurn();
     }
 
 
