@@ -173,6 +173,7 @@ public class ChessGame {
         return enemyAttackPositions.contains(kingPosition);
     }
 
+
     private boolean isValidatedMove (TeamColor teamColor) {
         Map<ChessPiece, ArrayList<ChessPosition>> pieces = (HashMap<ChessPiece, ArrayList<ChessPosition>>) gameBoard.getPieces();
         for (ChessPiece piece : pieces.keySet()) {
