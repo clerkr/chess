@@ -11,6 +11,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class ClearDBHandler implements Route {
             userService.clear();
             gameService.clear();
 
-            return new Gson().toJson("{}");
+            return new Gson().toJson(Collections.emptyMap());
 
         } catch (IllegalArgumentException e) {
             res.status(401);

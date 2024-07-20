@@ -10,6 +10,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,14 +28,14 @@ public class LogoutHandler implements Route {
             if (!req.requestMethod().equalsIgnoreCase("DELETE")) {
                 throw new IllegalArgumentException("Invalid HTTP request type");
             }
-            if ( !(req.body().contains("authorization")) ) {
+            if ( !(req.headers().contains("Authorization")) ) {
                 throw new IllegalArgumentException("Incorrect body params given... authToken needed");
             }
 
             LogoutRequest service_req = new LogoutRequest(req.headers("Authorization"));
             userService.logout(service_req);
 
-            return new Gson().toJson("{}");
+            return new Gson().toJson(Collections.emptyMap());
 
         } catch (IllegalArgumentException e) {
             res.status(400);
