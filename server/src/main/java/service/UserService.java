@@ -25,6 +25,12 @@ public class UserService implements Service {
         return new LoginResult(user.username(), authDAO.createAuth(user.username()));
     }
 
+    public void logout(LogoutRequest req) throws InvalidTokenException {
+        AuthData authData = authDAO.getAuth(req.authToken());
+        if (authData == null) { throw new InvalidTokenException("authToken not present"); }
+        authDAO.deleteAuth(authData);
+    }
+
     @Override
     public void clear() {
         userDAO.clearUsers();

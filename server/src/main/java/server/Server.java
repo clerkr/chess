@@ -12,9 +12,11 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", new ClearDBHandler());
-        Spark.get("/game", new ListGamesHandler());
         Spark.post("/user", new RegisterUserHandler());
         Spark.post("/session", new LoginHandler());
+        Spark.delete("/session", new LogoutHandler());
+        Spark.get("/game", new ListGamesHandler());
+
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
