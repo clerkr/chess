@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.ExtantUserException;
-import dataaccess.InvalidTokenException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.*;
 
 public class UserService implements Service {
@@ -20,6 +17,12 @@ public class UserService implements Service {
         String authToken = authDAO.createAuth(req.username());
 
         return new RegisterUserResult(req.username(), authToken);
+    }
+
+    public LoginResult login(LoginRequest req) throws Exception {
+        UserData user = userDAO.getUser(req.username());
+        if (user == null) { throw new UserNotFoundException("No existing use by those credentials"); }
+        return new LoginResult(user.username(), authDAO.createAuth(user.username()));
     }
 
     @Override
