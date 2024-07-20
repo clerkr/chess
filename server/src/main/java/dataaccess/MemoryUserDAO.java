@@ -26,7 +26,7 @@ public class MemoryUserDAO implements UserDAO {
         return null;
     }
 
-    public void clearUsers() {
-        users.clear();
-    }
+    public void createUser(UserData user) { users.add(user); }
+
+    public void clearUsers() { users.clear(); }
 }

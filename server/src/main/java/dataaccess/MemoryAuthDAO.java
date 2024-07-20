@@ -31,13 +31,15 @@ public class MemoryAuthDAO implements AuthDAO {
         return null;
     }
 
-    public static String generateToken() {
+    private String generateToken() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
     }
 
     @Override
-    public void createAuth(String username) {
-        auths.add(new AuthData(generateToken(), username));
+    public String createAuth(String username) {
+        String authToken = generateToken();
+        auths.add(new AuthData(authToken, username));
+        return authToken;
     }
 }
