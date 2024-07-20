@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public record ListGamesResult(
-        String authToken
+        ArrayList<GameData> games
 ) {}

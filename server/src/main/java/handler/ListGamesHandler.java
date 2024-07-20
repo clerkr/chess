@@ -1,6 +1,7 @@
 package handler;
 
 import dataaccess.InvalidTokenException;
+import model.GameData;
 import model.ListGamesResult;
 import service.*;
 import com.google.gson.Gson;
@@ -9,12 +10,14 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 
 public class ListGamesHandler implements Route {
 
     private GameService gameService = new GameService();
+    private record displayGameData(int gameID, String whiteUsername, String blackUsername, String gameName) {}
 
     public ListGamesHandler() {}
 
@@ -28,18 +31,19 @@ public class ListGamesHandler implements Route {
             if (!req.headers().contains("Authorization")) {
                 throw new IllegalArgumentException("Authorization header not found");
             }
-
             String authToken = req.headers("Authorization");
             ListGamesRequest service_req = new ListGamesRequest(authToken);
-
             ListGamesResult service_res = gameService.listGames(service_req);
 
-            String service_rep_token = service_res.authToken();
-
-            HashMap<String, String> authTokenMap = new HashMap<>();
-            authTokenMap.put("authorization", service_rep_token);
-            return new Gson().toJson(authTokenMap);
-
+            ArrayList<displayGameData> displayGames = new ArrayList<>();
+            for (GameData game : service_res.games()) {
+                displayGames.add(new displayGameData(
+                        game.getGameID(),
+                        game.getWhiteUsername(),
+                        game.getBlackUsername(),
+                        game.getGameName()));
+            }
+            return new Gson().toJson(Map.of("games", displayGames));
         } catch (IllegalArgumentException | InvalidTokenException e) {
             res.status(401);
             return new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));

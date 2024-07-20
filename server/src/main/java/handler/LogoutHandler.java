@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataaccess.InvalidTokenException;
 import dataaccess.UserNotFoundException;
 import model.LoginRequest;
 import model.LoginResult;
@@ -39,6 +40,9 @@ public class LogoutHandler implements Route {
 
         } catch (IllegalArgumentException e) {
             res.status(400);
+            return new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+        } catch (InvalidTokenException e) {
+            res.status(401);
             return new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
         }
     }

@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.ExtantUserException;
+import dataaccess.InvalidPasswordException;
 import dataaccess.UserNotFoundException;
 import model.LoginRequest;
 import model.LoginResult;
@@ -41,8 +42,11 @@ public class LoginHandler implements Route {
             json_res.put("authToken", service_res.authToken());
             return new Gson().toJson(json_res);
 
-        } catch (IllegalArgumentException | UserNotFoundException e) {
+        } catch (IllegalArgumentException e) {
             res.status(400);
+            return new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+        } catch (UserNotFoundException | InvalidPasswordException e) {
+            res.status(401);
             return new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
         }
     }
