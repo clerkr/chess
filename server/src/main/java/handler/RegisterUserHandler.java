@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataaccess.ExtantUserException;
 import dataaccess.InvalidTokenException;
 import model.RegisterUserRequest;
 import model.RegisterUserResult;
@@ -27,6 +28,9 @@ public class RegisterUserHandler implements Route {
             if (!req.requestMethod().equalsIgnoreCase("POST")) {
                 throw new IllegalArgumentException("Invalid HTTP request type");
             }
+            if ( !(req.body().contains("username") && req.body().contains("password") && req.body().contains("email"))) {
+                throw new IllegalArgumentException("Incorrect body params given. Username, password, and email needed");
+            }
 
             String username = req.params("username");
             String password = req.params("password");
@@ -41,7 +45,10 @@ public class RegisterUserHandler implements Route {
             return new Gson().toJson(json_res);
 
         } catch (IllegalArgumentException e) {
-            res.status(401);
+            res.status(400);
+            return new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+        } catch (ExtantUserException e) {
+            res.status(403);
             return new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
         }
     }
