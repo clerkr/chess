@@ -1,7 +1,8 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public record ListGamesResult(
-        ArrayList<GameData> games
+        HashSet<GameData> games
 ) {}

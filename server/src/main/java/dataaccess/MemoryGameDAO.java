@@ -4,12 +4,13 @@ import chess.ChessGame;
 import model.GameData;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class MemoryGameDAO implements GameDAO {
 
     private static MemoryGameDAO instance;
     private int gameID = 1;
-    private ArrayList<GameData> games = new ArrayList<>();
+    private HashSet<GameData> games = new HashSet<>();
 
     private MemoryGameDAO() {}
 
@@ -21,7 +22,7 @@ public class MemoryGameDAO implements GameDAO {
         gameID += 1;
     }
 
-    public ArrayList<GameData> listGames() {
+    public HashSet<GameData> listGames() {
         return games;
     }
 
@@ -43,18 +44,19 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public void updateGame(GameData updatedGame) throws InvalidGameException{
-//        String whiteuser = updatedGame.getWhiteUsername();
-//        String blackuser = updatedGame.getBlackUsername();
-        boolean joined = false;
+        boolean found = false;
         for (GameData game : games) {
             if (game.getGameID() == updatedGame.getGameID()) {
-//                game.setWhiteUsername(whiteuser);
-//                game.setBlackUsername(blackuser);
-                game = updatedGame;
-                joined = true;
+                found = true;
+                if (game.getWhiteUsername() != updatedGame.getWhiteUsername()) {
+                    game.setWhiteUsername(updatedGame.getWhiteUsername());
+                }
+                if (game.getBlackUsername() != updatedGame.getBlackUsername()) {
+                    game.setBlackUsername(updatedGame.getBlackUsername());
+                }
             }
         }
-        if (!joined) { throw new InvalidGameException("Game not found"); }
+        if (!found) { throw new InvalidGameException("Game not found"); }
     }
 
     @Override
