@@ -47,9 +47,9 @@ public class JoinGameHandler implements Route {
             String username = authData.username();
 
             conversionHelper body = new Gson().fromJson(req.body(), conversionHelper.class);
-            JoinGameRequest service_req = new JoinGameRequest(authToken, username, body.playerColor(), body.gameID());
-            gameService.joinGame(service_req);
-            return new Gson().toJson(Map.of("gameID", service_req.gameID()));
+            JoinGameRequest serviceReq = new JoinGameRequest(authToken, username, body.playerColor(), body.gameID());
+            gameService.joinGame(serviceReq);
+            return new Gson().toJson(Map.of("gameID", serviceReq.gameID()));
             
         } catch (IllegalArgumentException | InvalidGameException e) {
             res.status(400);

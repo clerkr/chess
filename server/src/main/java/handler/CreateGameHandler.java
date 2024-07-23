@@ -38,9 +38,9 @@ public class CreateGameHandler implements Route {
 
             String authToken = req.headers("Authorization");
             String gameName = new Gson().fromJson(req.body(), GameName.class).gameName();
-            CreateGameRequest service_req = new CreateGameRequest(authToken, gameName);
-            CreateGameResult service_res = gameService.createGame(service_req);
-            return new Gson().toJson(Map.of("gameID", service_res.gameID()));
+            CreateGameRequest serviceReq = new CreateGameRequest(authToken, gameName);
+            CreateGameResult serviceRes = gameService.createGame(serviceReq);
+            return new Gson().toJson(Map.of("gameID", serviceRes.gameID()));
 
         } catch (IllegalArgumentException e) {
             res.status(400);

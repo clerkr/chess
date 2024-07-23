@@ -34,13 +34,13 @@ public class LoginHandler implements Route {
                 throw new IllegalArgumentException("Incorrect body params given. Username and password needed");
             }
 
-            LoginRequest service_req = new Gson().fromJson(req.body(), LoginRequest.class);
-            LoginResult service_res = userService.login(service_req);
+            LoginRequest serviceReq = new Gson().fromJson(req.body(), LoginRequest.class);
+            LoginResult serviceRes = userService.login(serviceReq);
 
-            HashMap<String, String> json_res = new HashMap<>();
-            json_res.put("username", service_res.username());
-            json_res.put("authToken", service_res.authToken());
-            return new Gson().toJson(json_res);
+            HashMap<String, String> jsonRes = new HashMap<>();
+            jsonRes.put("username", serviceRes.username());
+            jsonRes.put("authToken", serviceRes.authToken());
+            return new Gson().toJson(jsonRes);
 
         } catch (IllegalArgumentException e) {
             res.status(400);

@@ -32,11 +32,11 @@ public class ListGamesHandler implements Route {
                 throw new IllegalArgumentException("Authorization header not found");
             }
             String authToken = req.headers("Authorization");
-            ListGamesRequest service_req = new ListGamesRequest(authToken);
-            ListGamesResult service_res = gameService.listGames(service_req);
+            ListGamesRequest serviceReq = new ListGamesRequest(authToken);
+            ListGamesResult serviceRes = gameService.listGames(serviceReq);
 
             ArrayList<displayGameData> displayGames = new ArrayList<>();
-            for (GameData game : service_res.games()) {
+            for (GameData game : serviceRes.games()) {
                 displayGames.add(new displayGameData(
                         game.getGameID(),
                         game.getWhiteUsername(),

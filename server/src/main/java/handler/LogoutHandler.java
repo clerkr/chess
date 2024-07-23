@@ -33,8 +33,8 @@ public class LogoutHandler implements Route {
                 throw new IllegalArgumentException("Incorrect body params given... authToken needed");
             }
 
-            LogoutRequest service_req = new LogoutRequest(req.headers("Authorization"));
-            userService.logout(service_req);
+            LogoutRequest serviceReq = new LogoutRequest(req.headers("Authorization"));
+            userService.logout(serviceReq);
 
             return new Gson().toJson(Collections.emptyMap());
 

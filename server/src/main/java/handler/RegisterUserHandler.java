@@ -32,13 +32,13 @@ public class RegisterUserHandler implements Route {
                 throw new IllegalArgumentException("Incorrect body params given. Username, password, and email needed");
             }
 
-            RegisterUserRequest service_req = new Gson().fromJson(req.body(), RegisterUserRequest.class);
-            RegisterUserResult service_res = userService.register(service_req);
+            RegisterUserRequest serviceReq = new Gson().fromJson(req.body(), RegisterUserRequest.class);
+            RegisterUserResult serviceRes = userService.register(serviceReq);
 
-            HashMap<String, String> json_res = new HashMap<>();
-            json_res.put("username", service_res.username());
-            json_res.put("authToken", service_res.authToken());
-            return new Gson().toJson(json_res);
+            HashMap<String, String> jsonRes = new HashMap<>();
+            jsonRes.put("username", serviceRes.username());
+            jsonRes.put("authToken", serviceRes.authToken());
+            return new Gson().toJson(jsonRes);
 
         } catch (IllegalArgumentException e) {
             res.status(400);
