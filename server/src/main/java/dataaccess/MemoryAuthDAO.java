@@ -11,8 +11,6 @@ public class MemoryAuthDAO implements AuthDAO {
     HashSet<AuthData> auths = new HashSet<>();
 
     private MemoryAuthDAO() {
-        AuthData sampleAuthData = new AuthData("1a2b3c", "sample username");
-        this.auths.add(sampleAuthData);
     }
 
     public static synchronized MemoryAuthDAO getInstance() {

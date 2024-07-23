@@ -1,13 +1,12 @@
-import chess.ChessGame;
 import dataaccess.*;
 import model.*;
-import org.junit.jupiter.api.*;
-import service.GameService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import service.UserService;
 
-import java.util.HashSet;
-
-public class UserServiceTests {
+public class AuthServiceTests {
 
     MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
     MemoryUserDAO userDAO = MemoryUserDAO.getInstance();
