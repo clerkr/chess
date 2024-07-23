@@ -10,14 +10,13 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 
 public class ListGamesHandler implements Route {
 
     private GameService gameService = new GameService();
-    private record displayGameData(int gameID, String whiteUsername, String blackUsername, String gameName) {}
+    private record DisplayGameData(int gameID, String whiteUsername, String blackUsername, String gameName) {}
 
     public ListGamesHandler() {}
 
@@ -35,9 +34,9 @@ public class ListGamesHandler implements Route {
             ListGamesRequest serviceReq = new ListGamesRequest(authToken);
             ListGamesResult serviceRes = gameService.listGames(serviceReq);
 
-            ArrayList<displayGameData> displayGames = new ArrayList<>();
+            ArrayList<DisplayGameData> displayGames = new ArrayList<>();
             for (GameData game : serviceRes.games()) {
-                displayGames.add(new displayGameData(
+                displayGames.add(new DisplayGameData(
                         game.getGameID(),
                         game.getWhiteUsername(),
                         game.getBlackUsername(),

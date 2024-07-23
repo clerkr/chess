@@ -61,8 +61,8 @@ public class UserServiceTests {
                 "pass1234"
         );
         LoginResult resLogin = userService.login(reqLogin);
-        String username_test = authDAO.getAuth(resLogin.authToken()).username();
-        Assertions.assertEquals(username_test, "username");
+        String usernameTest = authDAO.getAuth(resLogin.authToken()).username();
+        Assertions.assertEquals(usernameTest, "username");
     }
 
     @Test

@@ -5,8 +5,6 @@ import dataaccess.InvalidTokenException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.PlayerColorTakenException;
 import model.AuthData;
-import model.CreateGameRequest;
-import model.CreateGameResult;
 import model.JoinGameRequest;
 import service.GameService;
 import spark.Request;
@@ -26,7 +24,7 @@ public class JoinGameHandler implements Route {
     private GameService gameService = new GameService();
     private MemoryAuthDAO auth = MemoryAuthDAO.getInstance();
 
-    private record conversionHelper(String playerColor, int gameID) {}
+    private record ConversionHelper(String playerColor, int gameID) {}
 
     public JoinGameHandler() {}
 
@@ -46,7 +44,7 @@ public class JoinGameHandler implements Route {
             if (authData == null) { throw new InvalidTokenException("Unauthroized"); }
             String username = authData.username();
 
-            conversionHelper body = new Gson().fromJson(req.body(), conversionHelper.class);
+            ConversionHelper body = new Gson().fromJson(req.body(), ConversionHelper.class);
             JoinGameRequest serviceReq = new JoinGameRequest(authToken, username, body.playerColor(), body.gameID());
             gameService.joinGame(serviceReq);
             return new Gson().toJson(Map.of("gameID", serviceReq.gameID()));
