@@ -67,6 +67,58 @@ public class GameServiceTests {
         ListGamesResult res = gameService.listGames(new ListGamesRequest(testAuthToken));
 
         Assertions.assertEquals(res.games(), resTest.games());
+    }
+
+    @Test
+    @DisplayName("List games with invalid token")
+    public void testListGamesInvalidAuth() throws InvalidTokenException {
+
+        String testUsername = "user123";
+        String testAuthToken = authDAO.createAuth(testUsername);
+        GameService gameService = new GameService();
+
+        HashSet<GameData> games = new HashSet<>();
+        GameData game1 = new GameData(
+                1,
+                null,
+                null,
+                "game1",
+                new ChessGame());
+        GameData game2 = new GameData(
+                2,
+                null,
+                null,
+                "game2",
+                new ChessGame());
+        games.add(game1);
+        games.add(game2);
+        gameService.createGame(new CreateGameRequest(testAuthToken, "game1"));
+        gameService.createGame(new CreateGameRequest(testAuthToken, "game2"));
+
+        ListGamesResult resTest = new ListGamesResult(games);
+        Assertions.assertThrows(
+                InvalidTokenException.class,
+                () -> gameService.listGames(new ListGamesRequest("invalidToken")),
+                "Invalid auth token"
+                );
+    }
+
+    @Test
+    @DisplayName("Create new game with invalid auth")
+    public void createNewGameInvalidAuth() throws Exception{
+        GameService gameService = new GameService();
+        GameData game1test = new GameData(
+                1,
+                null,
+                null,
+                "game1",
+                new ChessGame());
+        CreateGameRequest req = new CreateGameRequest("invalid auth", "game1");
+        Assertions.assertThrows(
+                InvalidTokenException.class,
+                () -> gameService.createGame(req),
+                "Invalid auth token used"
+        );
 
     }
 
@@ -85,8 +137,9 @@ public class GameServiceTests {
         Assertions.assertEquals(game1test, game1);
     }
 
+
     @Test
-    @DisplayName("Create new game")
+    @DisplayName("User joining a game")
     public void joinGame() throws Exception{
         String testUsername1 = "username1";
         String testUsername2 = "username2";
@@ -144,6 +197,11 @@ public class GameServiceTests {
         gameService.clear();
         ListGamesResult resTest = new ListGamesResult(games);
         Assertions.assertEquals(games, resTest.games());
+    }
+
+    @Test
+    public void clearGamesNegative() {
+
     }
 
 }
