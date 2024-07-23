@@ -59,7 +59,13 @@ public class GameData {
             return false;
         }
         GameData gameData = (GameData) o;
-        return gameID == gameData.gameID && Objects.equals(whiteUsername, gameData.whiteUsername) && Objects.equals(blackUsername, gameData.blackUsername) && Objects.equals(gameName, gameData.gameName) && Objects.equals(game, gameData.game);
+
+        boolean gameIDCheck = gameID == gameData.gameID;
+        boolean whiteUserCheck = Objects.equals(whiteUsername, gameData.whiteUsername);
+        boolean blackUserCheck = Objects.equals(blackUsername, gameData.blackUsername);
+        boolean gameNameCheck = Objects.equals(gameName, gameData.gameName);
+        boolean gameCheck = Objects.equals(game, gameData.game);
+        return  gameIDCheck && whiteUserCheck && blackUserCheck && gameNameCheck && gameCheck;
     }
 
     @Override

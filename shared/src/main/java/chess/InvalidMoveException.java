@@ -13,6 +13,10 @@ public class InvalidMoveException extends Exception {
         super(message);
     }
 
-    public InvalidMoveException(String s, ChessGame.TeamColor teamColor, ChessPiece.PieceType promo, Serializable serializable, Serializable serializable1) {
+    public InvalidMoveException(String s,
+                                ChessGame.TeamColor teamColor,
+                                ChessPiece.PieceType promo,
+                                Serializable serializable,
+                                Serializable serializable1) {
     }
 }

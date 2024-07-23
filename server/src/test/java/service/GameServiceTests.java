@@ -62,7 +62,6 @@ public class GameServiceTests {
     @Test
     @DisplayName("List games with invalid token")
     public void testListGamesInvalidAuth() throws InvalidTokenException {
-
         String testUsername = "user123";
         String authTokenDummy = authDAO.createAuth(testUsername);
         GameService gameService = new GameService();
