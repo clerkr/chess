@@ -64,10 +64,4 @@ public class JoinGameHandler implements Route {
 
 
     }
-
-//    public Object handle() {
-//        var body = req.body();
-//        var header = req.headers();
-//    }
-
 }
