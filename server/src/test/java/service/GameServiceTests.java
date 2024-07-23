@@ -66,8 +66,6 @@ public class GameServiceTests {
         String testUsername = "user123";
         String authTokenDummy = authDAO.createAuth(testUsername);
         GameService gameService = new GameService();
-        HashSet<GameData> games = new HashSet<>();
-        ListGamesResult resTest = new ListGamesResult(games);
         Assertions.assertThrows(
                 InvalidTokenException.class,
                 () -> gameService.listGames(new ListGamesRequest("invalidToken")),
