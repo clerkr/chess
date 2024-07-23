@@ -1,11 +1,8 @@
-import chess.ChessGame;
+package service;
+
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
-import service.GameService;
-import service.UserService;
-
-import java.util.HashSet;
 
 public class UserServiceTests {
 

@@ -1,13 +1,11 @@
+package service;
+
 import chess.ChessGame;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
-import service.AuthService;
-import service.GameService;
-import service.UserService;
 
 import java.util.HashSet;
-import java.util.List;
 
 public class GameServiceTests {
 
