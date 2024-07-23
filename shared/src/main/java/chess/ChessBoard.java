@@ -66,9 +66,9 @@ public class ChessBoard {
                 ChessPosition position = new ChessPosition(row+1, col+1);
                 if (piece == null){ continue; }
                 if (!pieces.containsKey(piece)) {
-                    ArrayList<ChessPosition> position_list = new ArrayList<ChessPosition>();
-                    position_list.add(position);
-                    pieces.put(piece, position_list);
+                    ArrayList<ChessPosition> positionList = new ArrayList<ChessPosition>();
+                    positionList.add(position);
+                    pieces.put(piece, positionList);
                 } else {
                     pieces.get(piece).add(position);
                 }

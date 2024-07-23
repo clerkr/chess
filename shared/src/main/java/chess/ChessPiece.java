@@ -87,17 +87,17 @@ public class ChessPiece {
                       ChessBoard board,
                       ChessPosition myPosition,
                       int[][] directions) {
-        int starting_row = myPosition.getRow();
-        int starting_col = myPosition.getColumn();
+        int startingRow = myPosition.getRow();
+        int startingCol = myPosition.getColumn();
         int row;
         int col;
         int multiplier;
 
         for (int[] direction : directions) {
-            int row_dir = direction[0];
-            int col_dir = direction[1];
-            row = starting_row + row_dir;
-            col = starting_col + col_dir;
+            int rowDir = direction[0];
+            int colDir = direction[1];
+            row = startingRow + rowDir;
+            col = startingCol + colDir;
             multiplier = 1;
             while(true){
                 if (!inBoundsCheck(row, col)) { break; }
@@ -109,8 +109,8 @@ public class ChessPiece {
 
                 if (isPiece(board, row, col) && !isFriend(board, row, col)) { break; }
                 multiplier += 1;
-                row = starting_row + row_dir * multiplier;
-                col = starting_col + col_dir * multiplier;
+                row = startingRow + rowDir * multiplier;
+                col = startingCol + colDir * multiplier;
             }
         }
     }
@@ -118,16 +118,16 @@ public class ChessPiece {
                       ChessBoard board,
                       ChessPosition myPosition,
                       int[][] directions) {
-        int starting_row = myPosition.getRow();
-        int starting_col = myPosition.getColumn();
+        int startingRow = myPosition.getRow();
+        int startingCol = myPosition.getColumn();
         int row;
         int col;
 
         for (int[] direction : directions) {
-            int row_dir = direction[0];
-            int col_dir = direction[1];
-            row = starting_row + row_dir;
-            col = starting_col + col_dir;
+            int rowDir = direction[0];
+            int colDir = direction[1];
+            row = startingRow + rowDir;
+            col = startingCol + colDir;
 
             if (!inBoundsCheck(row, col)) { continue; }
             if (isPiece(board, row, col) && isFriend(board, row, col)) { continue; }
@@ -149,37 +149,37 @@ public class ChessPiece {
     private ArrayList<ChessMove> pawnMoves (ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
         int direction;
-        int initial_row;
-        int promotion_row;
-        int starting_row = myPosition.getRow();
-        int starting_col = myPosition.getColumn();
+        int initialRow;
+        int promotionRow;
+        int startingRow = myPosition.getRow();
+        int startingCol = myPosition.getColumn();
         int row;
         int col;
 
         if (pieceColor == ChessGame.TeamColor.WHITE) {
             direction = 1;
-            initial_row = 2;
-            promotion_row = 8;
+            initialRow = 2;
+            promotionRow = 8;
         } else {
             direction = -1;
-            initial_row = 7;
-            promotion_row = 1;
+            initialRow = 7;
+            promotionRow = 1;
         }
 
-        int[][] attack_directions = { {1,1}, {1,-1} };
+        int[][] attackDirections = { {1,1}, {1,-1} };
 
         // Attacking
-        for (int[] atck_dir : attack_directions) {
-            int row_dir = atck_dir[0] * direction;
-            int col_dir = atck_dir[1];
-            row = starting_row + row_dir;
-            col = starting_col + col_dir;
+        for (int[] atckDir : attackDirections) {
+            int rowDir = atckDir[0] * direction;
+            int colDir = atckDir[1];
+            row = startingRow + rowDir;
+            col = startingCol + colDir;
 
             if (!inBoundsCheck(row, col)) { continue; }
 
             if (isPiece(board, row, col) && !isFriend(board, row, col)) {
                 ChessPosition endPosition = new ChessPosition(row, col);
-                if (row == promotion_row) {
+                if (row == promotionRow) {
                     pawnPromoter(moves, myPosition, endPosition);
                 } else {
                     moves.add(new ChessMove(myPosition, endPosition, null));
@@ -188,17 +188,17 @@ public class ChessPiece {
         }
 
         // Forward
-        row = starting_row + direction;
-        col = starting_col;
+        row = startingRow + direction;
+        col = startingCol;
         if (inBoundsCheck(row, col) && !isPiece(board, row, col)) {
             ChessPosition endPosition = new ChessPosition(row, col);
-            if (row == promotion_row) {
+            if (row == promotionRow) {
                 pawnPromoter(moves, myPosition, endPosition);
             } else {
                 moves.add(new ChessMove(myPosition, endPosition, null));
             }
 
-            if (starting_row == initial_row &&
+            if (startingRow == initialRow &&
                 !isPiece(board, row + direction, col))
             {
                 endPosition = new ChessPosition(row + direction, col);
