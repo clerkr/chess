@@ -8,7 +8,7 @@ import java.util.UUID;
 public class MemoryAuthDAO implements AuthDAO {
 
     private static MemoryAuthDAO instance;
-    HashSet<AuthData> auths = new HashSet<>();
+    private HashSet<AuthData> auths = new HashSet<>();
 
     private MemoryAuthDAO() {
     }
