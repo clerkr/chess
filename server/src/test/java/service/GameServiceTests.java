@@ -50,16 +50,8 @@ public class GameServiceTests {
                 null,
                 "game1",
                 new ChessGame());
-        GameData game2 = new GameData(
-                2,
-                null,
-                null,
-                "game2",
-                new ChessGame());
         games.add(game1);
-        games.add(game2);
         gameService.createGame(new CreateGameRequest(testAuthToken, "game1"));
-        gameService.createGame(new CreateGameRequest(testAuthToken, "game2"));
 
         ListGamesResult resTest = new ListGamesResult(games);
         ListGamesResult res = gameService.listGames(new ListGamesRequest(testAuthToken));
@@ -82,16 +74,8 @@ public class GameServiceTests {
                 null,
                 "game1",
                 new ChessGame());
-        GameData game2 = new GameData(
-                2,
-                null,
-                null,
-                "game2",
-                new ChessGame());
         games.add(game1);
-        games.add(game2);
         gameService.createGame(new CreateGameRequest(testAuthToken, "game1"));
-        gameService.createGame(new CreateGameRequest(testAuthToken, "game2"));
 
         ListGamesResult resTest = new ListGamesResult(games);
         Assertions.assertThrows(
