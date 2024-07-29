@@ -1,9 +1,9 @@
 package handler;
 import com.google.gson.Gson;
-import dataaccess.InvalidGameException;
-import dataaccess.InvalidTokenException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.PlayerColorTakenException;
+import dataAccess.InvalidGameException;
+import dataAccess.InvalidTokenException;
+import dataAccess.MemoryAuthDAO;
+import dataAccess.PlayerColorTakenException;
 import model.AuthData;
 import model.JoinGameRequest;
 import service.GameService;

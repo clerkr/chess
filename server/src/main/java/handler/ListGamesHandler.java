@@ -1,6 +1,6 @@
 package handler;
 
-import dataaccess.InvalidTokenException;
+import dataAccess.InvalidTokenException;
 import model.GameData;
 import model.ListGamesResult;
 import service.*;

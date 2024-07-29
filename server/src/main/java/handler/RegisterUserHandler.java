@@ -1,11 +1,9 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataaccess.ExtantUserException;
-import dataaccess.InvalidTokenException;
+import dataAccess.ExtantUserException;
 import model.RegisterUserRequest;
 import model.RegisterUserResult;
-import service.GameService;
 import service.UserService;
 import spark.Request;
 import spark.Response;

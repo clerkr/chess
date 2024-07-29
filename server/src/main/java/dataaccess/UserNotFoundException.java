@@ -1,4 +1,4 @@
-package dataaccess;
+package dataAccess;
 
 public class UserNotFoundException extends Exception{
     public UserNotFoundException(String message) {

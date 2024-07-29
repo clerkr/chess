@@ -1,6 +1,4 @@
-package dataaccess;
-
-import model.AuthData;
+package dataAccess;
 
 public interface GameDAO {
     public void clearGames();

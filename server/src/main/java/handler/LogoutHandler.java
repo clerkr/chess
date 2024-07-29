@@ -1,10 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataaccess.InvalidTokenException;
-import dataaccess.UserNotFoundException;
-import model.LoginRequest;
-import model.LoginResult;
+import dataAccess.InvalidTokenException;
 import model.LogoutRequest;
 import service.UserService;
 import spark.Request;
@@ -12,7 +9,6 @@ import spark.Response;
 import spark.Route;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 

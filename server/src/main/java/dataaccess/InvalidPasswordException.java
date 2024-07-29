@@ -1,4 +1,4 @@
-package dataaccess;
+package dataAccess;
 
 public class InvalidPasswordException extends Exception{
     public InvalidPasswordException(String message) {

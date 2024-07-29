@@ -1,10 +1,7 @@
-package dataaccess;
+package dataAccess;
 
-import model.AuthData;
-import model.GameData;
 import model.UserData;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 

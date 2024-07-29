@@ -1,11 +1,9 @@
 package service;
 
-import dataaccess.*;
+import dataAccess.*;
 import model.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 
 public class GameService implements Service {

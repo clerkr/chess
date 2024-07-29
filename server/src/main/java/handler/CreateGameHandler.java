@@ -1,9 +1,8 @@
 package handler;
 import com.google.gson.Gson;
-import dataaccess.InvalidTokenException;
+import dataAccess.InvalidTokenException;
 import model.CreateGameRequest;
 import model.CreateGameResult;
-import model.LoginRequest;
 import service.GameService;
 import spark.Request;
 import spark.Response;

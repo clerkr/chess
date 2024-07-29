@@ -1,11 +1,6 @@
 package service;
 
-import dataaccess.InvalidTokenException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import model.AuthData;
-import model.ListGamesRequest;
-import model.ListGamesResult;
+import dataAccess.MemoryAuthDAO;
 
 public class AuthService implements Service {
 

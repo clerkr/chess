@@ -1,13 +1,10 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataaccess.ExtantUserException;
-import dataaccess.InvalidPasswordException;
-import dataaccess.UserNotFoundException;
+import dataAccess.InvalidPasswordException;
+import dataAccess.UserNotFoundException;
 import model.LoginRequest;
 import model.LoginResult;
-import model.RegisterUserRequest;
-import model.RegisterUserResult;
 import service.UserService;
 import spark.Request;
 import spark.Response;

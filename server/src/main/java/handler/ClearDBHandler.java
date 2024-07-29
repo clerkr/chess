@@ -1,9 +1,6 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataaccess.InvalidTokenException;
-import model.ListGamesRequest;
-import model.ListGamesResult;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -12,7 +9,6 @@ import spark.Response;
 import spark.Route;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 
