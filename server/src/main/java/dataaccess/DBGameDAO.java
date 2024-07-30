@@ -40,26 +40,20 @@ public class DBGameDAO implements GameDAO {
     }
 
     @Override
-    public void clearAuths() throws DataAccessException, SQLException {
-        String statement = "TRUNCATE auths";
-        Connection conn = DatabaseManager.getConnection();
-        try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
-        }
-    }
-
-    @Override
-    public AuthData getAuth(String token) throws DataAccessException, SQLException{
-        String statement = "SELECT id, authToken, username FROM auths WHERE authToken=?";
+    public GameData getGame(int gameID) throws DataAccessException {
+        String statement = "SELECT id, whiteUsername, blackUsername, gameName, game FROM games WHERE id=?";
         Connection conn = DatabaseManager.getConnection();
 
         try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setString(1, token);
+            preparedStatement.setString(1, String.valueOf(gameID));
             try (var rs = preparedStatement.executeQuery()) {
-//                var id = rs.getInt("id");
-                var authToken = rs.getString("authToken");
-                var username = rs.getString("username");
-                return new AuthData(authToken, username);
+                var id = rs.getInt("id");
+                var whiteUsername = rs.getString("whiteUsername");
+                var blackUsername = rs.getString("blackUsername");
+                var gameName = rs.getString("gameName");
+                var gameJson = rs.getString("game");
+                var game = new Gson().fromJson(gameJson, ChessGame.class);
+                return new GameData(id, whiteUsername, blackUsername, gameName, game);
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -68,27 +62,30 @@ public class DBGameDAO implements GameDAO {
     }
 
     @Override
-    public String createAuth(String username) throws DataAccessException, SQLException{
+    public int createGame(String gameName) throws SQLException, DataAccessException {
 
-        String statement = "INSERT INTO auths (authToken, username) VALUES(?, ?)";
+        String statement = "INSERT INTO auths (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?, ?)";
         Connection conn = DatabaseManager.getConnection();
+        int gameID;
         try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setString(1, authToken);
-            preparedStatement.setString(2, username);
-            preparedStatement.executeUpdate();
-        }
+            preparedStatement.setString(1, null);
+            preparedStatement.setString(2, null);
+            preparedStatement.setString(3, gameName);
+            String gameJson = new Gson().toJson(new ChessGame());
+            preparedStatement.setString(4, gameJson);
 
-        return authToken;
-    }
-
-    @Override
-    public void deleteAuth(AuthData auth) throws DataAccessException, SQLException {
-        String statement = "DELETE FROM auths WHERE authToken=?";
-        Connection conn = DatabaseManager.getConnection();
-        try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setString(1, auth.authToken());
             preparedStatement.executeUpdate();
+
+            try (var generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    gameID = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Creating game failed, no ID obtained.");
+                }
+            }
         }
+        return gameID;
+
     }
 
     private final String[] createStatements = {
