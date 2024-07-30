@@ -64,7 +64,7 @@ public class DBGameDAO implements GameDAO {
     @Override
     public int createGame(String gameName) throws SQLException, DataAccessException {
 
-        String statement = "INSERT INTO auths (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?, ?)";
+        String statement = "INSERT INTO auths (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?)";
         Connection conn = DatabaseManager.getConnection();
         int gameID;
         try (var preparedStatement = conn.prepareStatement(statement)) {
@@ -88,6 +88,31 @@ public class DBGameDAO implements GameDAO {
 
     }
 
+    @Override
+    public void updateGame(GameData updatedGame) throws InvalidGameException, DataAccessException, SQLException {
+        String statement = "UPDATE games SET whiteUsername=?, blackUsername=?, gameName=? WHERE id=?";
+        Connection conn = DatabaseManager.getConnection();
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, updatedGame.getWhiteUsername());
+            preparedStatement.setString(2, updatedGame.getBlackUsername());
+            preparedStatement.setString(3, updatedGame.getGameName());
+            preparedStatement.setInt(4,updatedGame.getGameID());
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new InvalidGameException("No game found by that ID");
+            }
+        }
+    }
+
+    @Override
+    public void clearGames() throws DataAccessException, SQLException {
+        String statement = "TRUNCATE games";
+        Connection conn = DatabaseManager.getConnection();
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS games (
@@ -96,9 +121,7 @@ public class DBGameDAO implements GameDAO {
               `blackUsername` varchar(256) NOT NULL,
               `gameName` varchar(256) NOT NULL,
               `game` varchar(256) NOT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(type),
-              INDEX(name)
+              PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
