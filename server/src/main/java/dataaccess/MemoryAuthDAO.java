@@ -17,6 +17,7 @@ public class MemoryAuthDAO implements AuthDAO {
         return (instance == null) ? (instance = new MemoryAuthDAO()) : instance;
     }
 
+    @Override
     public void clearAuths() { auths.clear(); }
 
     @Override
