@@ -16,6 +16,7 @@ public class MemoryUserDAO implements UserDAO {
         return (instance == null) ? (instance = new MemoryUserDAO()) : instance;
     }
 
+    @Override
     public UserData getUser(String username) {
         for (UserData user : users) {
             if (Objects.equals(user.username(), username)) { return user; }
@@ -23,7 +24,9 @@ public class MemoryUserDAO implements UserDAO {
         return null;
     }
 
+    @Override
     public void createUser(UserData user) { users.add(user); }
 
+    @Override
     public void clearUsers() { users.clear(); }
 }
