@@ -1,21 +1,21 @@
 package dataAccess;
 import model.AuthData;
+import model.UserData;
 
-import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
 
-public class DBAuthDAO implements AuthDAO {
+public class DBUserDAO implements UserDAO {
 
-    public DBAuthDAO() throws Exception {
+    public DBUserDAO() throws Exception {
         configureDatabase();
     }
 
     @Override
-    public void clearAuths() throws DataAccessException, SQLException {
-        String statement = "TRUNCATE auths";
+    public void clearUsers() throws DataAccessException, SQLException {
+        String statement = "TRUNCATE users";
         Connection conn = DatabaseManager.getConnection();
         try (var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
@@ -23,17 +23,18 @@ public class DBAuthDAO implements AuthDAO {
     }
 
     @Override
-    public AuthData getAuth(String token) throws DataAccessException, SQLException{
-        String statement = "SELECT id, authToken, username FROM auths WHERE authToken=?";
+    public UserData getUser(String username) throws DataAccessException, SQLException{
+        String statement = "SELECT id, username, password, email FROM users WHERE username=?";
         Connection conn = DatabaseManager.getConnection();
 
         try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setString(1, token);
+            preparedStatement.setString(1, username);
             try (var rs = preparedStatement.executeQuery()) {
 //                var id = rs.getInt("id");
-                var authToken = rs.getString("authToken");
-                var username = rs.getString("username");
-                return new AuthData(authToken, username);
+                var usernameFromDB = rs.getString("username");
+                var password = rs.getString("password");
+                var email = rs.getString("email");
+                return new UserData(usernameFromDB, password, email);
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -41,32 +42,15 @@ public class DBAuthDAO implements AuthDAO {
         }
     }
 
-    private String generateToken() {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString();
-    }
-
     @Override
-    public String createAuth(String username) throws DataAccessException, SQLException{
-        String authToken = generateToken();
+    public void createUser(UserData user) throws DataAccessException, SQLException{
 
-        String statement = "INSERT INTO auths (authToken, username) VALUES(?, ?)";
+        String statement = "INSERT INTO users (username, password, email) VALUES(?, ?)";
         Connection conn = DatabaseManager.getConnection();
         try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setString(1, authToken);
-            preparedStatement.setString(2, username);
-            preparedStatement.executeUpdate();
-        }
-
-        return authToken;
-    }
-
-    @Override
-    public void deleteAuth(AuthData auth) throws DataAccessException, SQLException {
-        String statement = "DELETE FROM auths WHERE authToken=?";
-        Connection conn = DatabaseManager.getConnection();
-        try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setString(1, auth.authToken());
+            preparedStatement.setString(1, user.username());
+            preparedStatement.setString(2, user.password());
+            preparedStatement.setString(3, user.email());
             preparedStatement.executeUpdate();
         }
     }
@@ -75,8 +59,9 @@ public class DBAuthDAO implements AuthDAO {
             """
             CREATE TABLE IF NOT EXISTS auths (
               `id` int NOT NULL AUTO_INCREMENT,
-              `authToken` varchar(256) NOT NULL,
               `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
+              `email` varchar(256) NOT NULL,
               PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
