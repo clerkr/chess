@@ -1,5 +1,5 @@
 package service;
 
 public interface Service {
-    public void clear();
+    public void clear() throws Exception;
 }

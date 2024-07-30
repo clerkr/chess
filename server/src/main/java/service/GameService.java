@@ -8,8 +8,10 @@ import java.util.Objects;
 
 public class GameService implements Service {
 
-    MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
-    MemoryGameDAO gameDAO = MemoryGameDAO.getInstance();
+//    MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
+//    MemoryGameDAO gameDAO = MemoryGameDAO.getInstance();
+    DBAuthDAO authDAO = new DBAuthDAO();
+    DBGameDAO gameDAO = new DBGameDAO();
 
     public ListGamesResult listGames(ListGamesRequest req) throws InvalidTokenException {
         String authToken = req.authToken();

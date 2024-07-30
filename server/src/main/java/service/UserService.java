@@ -7,8 +7,13 @@ import java.util.Objects;
 
 public class UserService implements Service {
 
-    MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
-    MemoryUserDAO userDAO = MemoryUserDAO.getInstance();
+//    MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
+//    MemoryUserDAO userDAO = MemoryUserDAO.getInstance();
+    DBAuthDAO authDAO = new DBAuthDAO();
+    DBUserDAO userDAO = new DBUserDAO();
+
+    public UserService() {
+    }
 
     public RegisterUserResult register(RegisterUserRequest req) throws Exception {
 
@@ -28,7 +33,7 @@ public class UserService implements Service {
         return new LoginResult(user.username(), authDAO.createAuth(user.username()));
     }
 
-    public void logout(LogoutRequest req) throws InvalidTokenException {
+    public void logout(LogoutRequest req) throws Exception {
         AuthData authData = authDAO.getAuth(req.authToken());
         if (authData == null) { throw new InvalidTokenException("unauthorized"); }
         authDAO.deleteAuth(authData);
@@ -36,6 +41,10 @@ public class UserService implements Service {
 
     @Override
     public void clear() {
-        userDAO.clearUsers();
+        try {
+            userDAO.clearUsers();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

@@ -5,9 +5,9 @@ import model.GameData;
 import java.util.HashSet;
 
 public interface GameDAO {
-    HashSet<GameData> listGames() throws Exception;
-    GameData getGame(int gameID) throws Exception;
-    int createGame(String gameName) throws Exception;
-    void updateGame(GameData updatedGame) throws Exception;
+    HashSet<GameData> listGames();
+    GameData getGame(int gameID);
+    int createGame(String gameName);
+    void updateGame(GameData updatedGame) throws InvalidGameException;
     void clearGames() throws Exception;
 }
