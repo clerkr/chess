@@ -1,5 +1,13 @@
 package dataAccess;
 
+import model.GameData;
+
+import java.util.HashSet;
+
 public interface GameDAO {
-    public void clearGames();
+    HashSet<GameData> listGames();
+    GameData getGame(int gameID);
+    int createGame(String gameName);
+    void updateGame(GameData updatedGame) throws Exception;
+    void clearGames();
 }

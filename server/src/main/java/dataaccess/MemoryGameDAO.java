@@ -21,10 +21,12 @@ public class MemoryGameDAO implements GameDAO {
         gameID += 1;
     }
 
+    @Override
     public HashSet<GameData> listGames() {
         return games;
     }
 
+    @Override
     public GameData getGame(int gameID) {
         for (GameData game : games) {
             if (game.getGameID() == gameID) {
@@ -34,6 +36,7 @@ public class MemoryGameDAO implements GameDAO {
         return null;
     }
 
+    @Override
     public int createGame(String gameName) {
         int thisGameID = gameID;
         incrementGameID();
@@ -42,6 +45,7 @@ public class MemoryGameDAO implements GameDAO {
         return thisGameID;
     }
 
+    @Override
     public void updateGame(GameData updatedGame) throws InvalidGameException{
         boolean found = false;
         for (GameData game : games) {
