@@ -39,10 +39,19 @@ public class DBUserDAO implements UserDAO {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
+                    String usernameFromDB = null;
+                    String password = null;
+                    String email = null;
+
+                    if (rs.next()) {
 //                var id = rs.getInt("id");
-                    var usernameFromDB = rs.getString("username");
-                    var password = rs.getString("password");
-                    var email = rs.getString("email");
+                        usernameFromDB = rs.getString("username");
+                        password = rs.getString("password");
+                        email = rs.getString("email");
+                    }
+                    if (usernameFromDB == null) {
+                        throw new UserNotFoundException("No user found");
+                    }
                     return new UserData(usernameFromDB, password, email);
                 }
             }
@@ -56,7 +65,7 @@ public class DBUserDAO implements UserDAO {
     public void createUser(UserData user) {
 
         try {
-            String statement = "INSERT INTO users (username, password, email) VALUES(?, ?)";
+            String statement = "INSERT INTO users (username, password, email) VALUES(?, ?, ?)";
             Connection conn = DatabaseManager.getConnection();
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, user.username());
@@ -71,7 +80,7 @@ public class DBUserDAO implements UserDAO {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS auths (
+            CREATE TABLE IF NOT EXISTS users (
               `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,

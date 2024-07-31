@@ -63,6 +63,8 @@ public class DatabaseTests {
         stopServer();
         startServer();
 
+        String auth2 = regResult.getAuthToken();
+
         //list games using the auth
         TestListResult listResult = serverFacade.listGames(auth);
         Assertions.assertEquals(200, serverFacade.getStatusCode(), "Server response code was not 200 OK");
