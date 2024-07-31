@@ -39,19 +39,19 @@ public class DBUserDAO implements UserDAO {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
                     String usernameFromDB = null;
-                    String rawPassword = null;
+                    String hashedPassword = null;
                     String email = null;
 
                     if (rs.next()) {
 //                var id = rs.getInt("id");
                         usernameFromDB = rs.getString("username");
-                        rawPassword = rs.getString("password");
+                        hashedPassword = rs.getString("password");
                         email = rs.getString("email");
                     }
                     if (usernameFromDB == null) {
                         throw new UserNotFoundException("No user found");
                     }
-                    return new UserData(usernameFromDB, rawPassword, email);
+                    return new UserData(usernameFromDB, hashedPassword, email);
                 }
             }
         } catch (Exception e) {
