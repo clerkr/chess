@@ -7,6 +7,7 @@ import model.GameData;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -24,9 +25,8 @@ public class DBGameDAO implements GameDAO {
     @Override
     public HashSet<GameData> listGames() {
         HashSet<GameData> games = new HashSet<>();
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "SELECT id, whiteUsername, blackUsername, gameName, game FROM games";
-            Connection conn = DatabaseManager.getConnection();
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 try (var rs = preparedStatement.executeQuery()) {
                     while (rs.next()) {
@@ -50,18 +50,25 @@ public class DBGameDAO implements GameDAO {
     @Override
     public GameData getGame(int gameID) {
         String statement = "SELECT id, whiteUsername, blackUsername, gameName, game FROM games WHERE id=?";
-        try {
-            Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DatabaseManager.getConnection()) {
 
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, String.valueOf(gameID));
                 try (var rs = preparedStatement.executeQuery()) {
-                    var id = rs.getInt("id");
-                    var whiteUsername = rs.getString("whiteUsername");
-                    var blackUsername = rs.getString("blackUsername");
-                    var gameName = rs.getString("gameName");
-                    var gameJson = rs.getString("game");
-                    var game = new Gson().fromJson(gameJson, ChessGame.class);
+                    int id = -1;
+                    String whiteUsername = null;
+                    String blackUsername = null;
+                    String gameName = null;
+                    ChessGame game = null;
+                    if (rs.next()) {
+                        id = rs.getInt("id");
+                        whiteUsername = rs.getString("whiteUsername");
+                        blackUsername = rs.getString("blackUsername");
+                        gameName = rs.getString("gameName");
+                        var gameJson = rs.getString("game");
+                        game = new Gson().fromJson(gameJson, ChessGame.class);
+                    }
+                    if (id == -1) { throw new InvalidGameException("No game"); }
                     return new GameData(id, whiteUsername, blackUsername, gameName, game);
                 }
             }
@@ -74,13 +81,12 @@ public class DBGameDAO implements GameDAO {
     @Override
     public int createGame(String gameName) {
         int gameID = -1;
-        try {
-            String statement = "INSERT INTO auths (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?)";
-            Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?)";
 
             try (var preparedStatement = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
-                preparedStatement.setString(1, null);
-                preparedStatement.setString(2, null);
+                preparedStatement.setNull(1, Types.VARCHAR);
+                preparedStatement.setNull(2, Types.VARCHAR);
                 preparedStatement.setString(3, gameName);
                 String gameJson = new Gson().toJson(new ChessGame());
                 preparedStatement.setString(4, gameJson);
@@ -94,9 +100,13 @@ public class DBGameDAO implements GameDAO {
                         throw new SQLException("Creating game failed, no ID obtained.");
                     }
                 }
+            } catch (Exception e) {
+                // Swallowing
+                System.out.println(e);
             }
         } catch (Exception e) {
             // Swallowing
+            System.out.println(e);
         }
         return gameID;
 
@@ -104,9 +114,9 @@ public class DBGameDAO implements GameDAO {
 
     @Override
     public void updateGame(GameData updatedGame) throws InvalidGameException {
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "UPDATE games SET whiteUsername=?, blackUsername=?, gameName=? WHERE id=?";
-            Connection conn = DatabaseManager.getConnection();
+
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, updatedGame.getWhiteUsername());
                 preparedStatement.setString(2, updatedGame.getBlackUsername());
@@ -124,9 +134,9 @@ public class DBGameDAO implements GameDAO {
 
     @Override
     public void clearGames() {
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "TRUNCATE games";
-            Connection conn = DatabaseManager.getConnection();
+
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
@@ -139,10 +149,10 @@ public class DBGameDAO implements GameDAO {
             """
             CREATE TABLE IF NOT EXISTS games (
               `id` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NOT NULL,
-              `blackUsername` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256) DEFAULT '',
+              `blackUsername` varchar(256) DEFAULT '',
               `gameName` varchar(256) NOT NULL,
-              `game` varchar(256) NOT NULL,
+              `game` TEXT NOT NULL,
               PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """

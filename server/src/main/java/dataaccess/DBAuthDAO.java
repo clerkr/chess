@@ -19,9 +19,8 @@ public class DBAuthDAO implements AuthDAO {
 
     @Override
     public void clearAuths() {
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "TRUNCATE auths";
-            Connection conn = DatabaseManager.getConnection();
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
@@ -32,16 +31,22 @@ public class DBAuthDAO implements AuthDAO {
 
     @Override
     public AuthData getAuth(String token) {
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "SELECT id, authToken, username FROM auths WHERE authToken=?";
-            Connection conn = DatabaseManager.getConnection();
 
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, token);
                 try (var rs = preparedStatement.executeQuery()) {
 //                var id = rs.getInt("id");
-                    var authToken = rs.getString("authToken");
-                    var username = rs.getString("username");
+                    String authToken = null;
+                    String username = null;
+                    if(rs.next()) {
+                        authToken = rs.getString("authToken");
+                        username = rs.getString("username");
+                    }
+                    if (authToken == null || username == null) {
+                        throw new InvalidTokenException("Token not found");
+                    }
                     return new AuthData(authToken, username);
                 }
             }
@@ -58,11 +63,10 @@ public class DBAuthDAO implements AuthDAO {
 
     @Override
     public String createAuth(String username) {
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String authToken = generateToken();
 
             String statement = "INSERT INTO auths (authToken, username) VALUES(?, ?)";
-            Connection conn = DatabaseManager.getConnection();
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, authToken);
                 preparedStatement.setString(2, username);
@@ -78,9 +82,8 @@ public class DBAuthDAO implements AuthDAO {
 
     @Override
     public void deleteAuth(AuthData auth) {
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "DELETE FROM auths WHERE authToken=?";
-            Connection conn = DatabaseManager.getConnection();
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, auth.authToken());
                 preparedStatement.executeUpdate();

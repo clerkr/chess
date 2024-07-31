@@ -1,6 +1,7 @@
 package dataAccess;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,9 +20,8 @@ public class DBUserDAO implements UserDAO {
 
     @Override
     public void clearUsers() {
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "TRUNCATE users";
-            Connection conn = DatabaseManager.getConnection();
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
@@ -32,27 +32,26 @@ public class DBUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) {
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "SELECT id, username, password, email FROM users WHERE username=?";
-            Connection conn = DatabaseManager.getConnection();
 
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
                     String usernameFromDB = null;
-                    String password = null;
+                    String rawPassword = null;
                     String email = null;
 
                     if (rs.next()) {
 //                var id = rs.getInt("id");
                         usernameFromDB = rs.getString("username");
-                        password = rs.getString("password");
+                        rawPassword = rs.getString("password");
                         email = rs.getString("email");
                     }
                     if (usernameFromDB == null) {
                         throw new UserNotFoundException("No user found");
                     }
-                    return new UserData(usernameFromDB, password, email);
+                    return new UserData(usernameFromDB, rawPassword, email);
                 }
             }
         } catch (Exception e) {
@@ -64,12 +63,13 @@ public class DBUserDAO implements UserDAO {
     @Override
     public void createUser(UserData user) {
 
-        try {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "INSERT INTO users (username, password, email) VALUES(?, ?, ?)";
-            Connection conn = DatabaseManager.getConnection();
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, user.username());
-                preparedStatement.setString(2, user.password());
+                String rawPassword = user.password();
+                String encryptPass = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+                preparedStatement.setString(2, encryptPass);
                 preparedStatement.setString(3, user.email());
                 preparedStatement.executeUpdate();
             }

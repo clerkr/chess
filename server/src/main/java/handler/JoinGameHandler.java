@@ -1,9 +1,6 @@
 package handler;
 import com.google.gson.Gson;
-import dataAccess.InvalidGameException;
-import dataAccess.InvalidTokenException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.PlayerColorTakenException;
+import dataAccess.*;
 import model.AuthData;
 import model.JoinGameRequest;
 import service.GameService;
@@ -22,7 +19,8 @@ Send the converted information from the HTTP to the Server classes
 public class JoinGameHandler implements Route {
 
     private GameService gameService = new GameService();
-    private MemoryAuthDAO auth = MemoryAuthDAO.getInstance();
+//    private MemoryAuthDAO auth = MemoryAuthDAO.getInstance();
+    private DBAuthDAO auth = new DBAuthDAO();
 
     private record ConversionHelper(String playerColor, int gameID) {}
 

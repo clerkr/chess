@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 
@@ -29,7 +30,8 @@ public class UserService implements Service {
     public LoginResult login(LoginRequest req) throws Exception {
         UserData user = userDAO.getUser(req.username());
         if (user == null) { throw new UserNotFoundException("No existing user from credentials"); }
-        if (!Objects.equals(user.password(), req.password())) { throw new InvalidPasswordException("unauthorized"); }
+//        if (!Objects.equals(user.password(), req.password())) { throw new InvalidPasswordException("unauthorized"); }
+        if (!BCrypt.checkpw(req.password(), user.password())) { throw new InvalidPasswordException("unauthorized"); }
         return new LoginResult(user.username(), authDAO.createAuth(user.username()));
     }
 
