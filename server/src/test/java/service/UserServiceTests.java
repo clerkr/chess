@@ -6,9 +6,13 @@ import org.junit.jupiter.api.*;
 
 public class UserServiceTests {
 
-    MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
-    MemoryUserDAO userDAO = MemoryUserDAO.getInstance();
-    MemoryGameDAO gameDAO = MemoryGameDAO.getInstance();
+//    MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
+//    MemoryUserDAO userDAO = MemoryUserDAO.getInstance();
+//    MemoryGameDAO gameDAO = MemoryGameDAO.getInstance();
+
+    DBAuthDAO authDAO = new DBAuthDAO();
+    DBUserDAO userDAO = new DBUserDAO();
+    DBGameDAO gameDAO = new DBGameDAO();
 
     @BeforeEach
     public void setup() {
