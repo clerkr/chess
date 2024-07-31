@@ -6,10 +6,8 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService implements Service {
 
-//    MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
-//    MemoryUserDAO userDAO = MemoryUserDAO.getInstance();
-    DBAuthDAO authDAO = new DBAuthDAO();
-    DBUserDAO userDAO = new DBUserDAO();
+    DBAuthDAO authDAO = new DBAuthDAO(); // MemoryAuthDAO.getInstance();
+    DBUserDAO userDAO = new DBUserDAO(); // MemoryUserDAO.getInstance();
 
     public UserService() {
     }

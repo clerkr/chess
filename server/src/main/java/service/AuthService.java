@@ -4,8 +4,7 @@ import dataaccess.DBAuthDAO;
 
 public class AuthService implements Service {
 
-//    MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
-    DBAuthDAO authDAO = new DBAuthDAO();
+    DBAuthDAO authDAO = new DBAuthDAO(); //MemoryAuthDAO.getInstance();
 
     @Override
     public void clear() {
