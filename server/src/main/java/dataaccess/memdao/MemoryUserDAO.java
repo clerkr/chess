@@ -13,10 +13,6 @@ public class MemoryUserDAO implements UserDAO {
 
     private MemoryUserDAO() {}
 
-    public static synchronized MemoryUserDAO getInstance() {
-        return (instance == null) ? (instance = new MemoryUserDAO()) : instance;
-    }
-
     @Override
     public UserData getUser(String username) {
         for (UserData user : users) {

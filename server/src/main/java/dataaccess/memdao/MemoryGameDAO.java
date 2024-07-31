@@ -14,10 +14,7 @@ public class MemoryGameDAO implements GameDAO {
     private HashSet<GameData> games = new HashSet<>();
 
     private MemoryGameDAO() {}
-
-    public static synchronized MemoryGameDAO getInstance() {
-        return (instance == null) ? (instance = new MemoryGameDAO()) : instance;
-    }
+    // return (instance == null) ? (instance = new MemoryGameDAO()) : instance;
 
     private void incrementGameID() {
         gameID += 1;
