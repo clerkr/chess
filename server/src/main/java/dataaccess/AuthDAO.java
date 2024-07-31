@@ -1,8 +1,6 @@
-package dataAccess;
+package dataaccess;
 
 import model.AuthData;
-
-import java.sql.SQLException;
 
 public interface AuthDAO {
     void clearAuths();

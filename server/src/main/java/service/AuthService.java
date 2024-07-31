@@ -1,7 +1,6 @@
 package service;
 
-import dataAccess.DBAuthDAO;
-import dataAccess.MemoryAuthDAO;
+import dataaccess.DBAuthDAO;
 
 public class AuthService implements Service {
 

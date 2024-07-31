@@ -1,6 +1,6 @@
 package handler;
 import com.google.gson.Gson;
-import dataAccess.*;
+import dataaccess.*;
 import model.AuthData;
 import model.JoinGameRequest;
 import service.GameService;

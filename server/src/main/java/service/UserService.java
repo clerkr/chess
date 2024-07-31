@@ -1,10 +1,8 @@
 package service;
 
-import dataAccess.*;
+import dataaccess.*;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
-
-import java.util.Objects;
 
 public class UserService implements Service {
 

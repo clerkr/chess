@@ -1,14 +1,10 @@
 package dataaccess;
-import dataAccess.*;
-import dataAccess.DBUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
-
-import java.util.HashSet;
 
 public class DBUserDAOTests {
     DBUserDAO userDAO = new DBUserDAO();

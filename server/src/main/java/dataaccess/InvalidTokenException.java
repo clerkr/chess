@@ -1,4 +1,4 @@
-package dataAccess;
+package dataaccess;
 
 public class InvalidTokenException extends Exception{
     public InvalidTokenException(String message) {

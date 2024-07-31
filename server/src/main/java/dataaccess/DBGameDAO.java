@@ -1,7 +1,6 @@
-package dataAccess;
+package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
 
 import java.sql.Connection;
@@ -9,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.HashSet;
-import java.util.UUID;
 
 
 public class DBGameDAO implements GameDAO {

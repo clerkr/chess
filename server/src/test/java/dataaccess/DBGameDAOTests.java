@@ -1,10 +1,6 @@
 package dataaccess;
 
 import chess.ChessGame;
-import dataAccess.DBAuthDAO;
-import dataAccess.DBGameDAO;
-import dataAccess.DBUserDAO;
-import dataAccess.InvalidGameException;
 import model.GameData;
 import org.junit.jupiter.api.*;
 

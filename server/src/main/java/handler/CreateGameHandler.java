@@ -1,6 +1,6 @@
 package handler;
 import com.google.gson.Gson;
-import dataAccess.InvalidTokenException;
+import dataaccess.InvalidTokenException;
 import model.CreateGameRequest;
 import model.CreateGameResult;
 import service.GameService;

@@ -1,8 +1,8 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataAccess.InvalidPasswordException;
-import dataAccess.UserNotFoundException;
+import dataaccess.InvalidPasswordException;
+import dataaccess.UserNotFoundException;
 import model.LoginRequest;
 import model.LoginResult;
 import service.UserService;

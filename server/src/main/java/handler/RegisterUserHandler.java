@@ -1,7 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataAccess.ExtantUserException;
+import dataaccess.ExtantUserException;
 import model.RegisterUserRequest;
 import model.RegisterUserResult;
 import service.UserService;

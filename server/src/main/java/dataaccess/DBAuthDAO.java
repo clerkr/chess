@@ -1,7 +1,6 @@
-package dataAccess;
+package dataaccess;
 import model.AuthData;
 
-import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
