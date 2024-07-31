@@ -63,6 +63,9 @@ public class DBAuthDAO implements AuthDAO {
 
     @Override
     public String createAuth(String username) {
+
+        if (!(username instanceof String)) { return null; }
+
         try (Connection conn = DatabaseManager.getConnection()) {
             String authToken = generateToken();
 

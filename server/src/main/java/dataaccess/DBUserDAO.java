@@ -1,11 +1,9 @@
 package dataAccess;
-import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.UUID;
 
 
 public class DBUserDAO implements UserDAO {
@@ -61,7 +59,9 @@ public class DBUserDAO implements UserDAO {
     }
 
     @Override
-    public void createUser(UserData user) {
+    public String createUser(UserData user) {
+
+        if (!(user instanceof UserData)) { return null; }
 
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "INSERT INTO users (username, password, email) VALUES(?, ?, ?)";
@@ -76,6 +76,7 @@ public class DBUserDAO implements UserDAO {
         } catch (Exception e) {
             // Swallow
         }
+        return user.username();
     }
 
     private final String[] createStatements = {

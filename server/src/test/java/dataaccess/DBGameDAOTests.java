@@ -31,7 +31,11 @@ public class DBGameDAOTests {
         Assertions.assertEquals(2, games.size());
     }
 
-    // Empty games table for (-)
+    @Test
+    public void listGamesNegative() {
+        var games = gameDAO.listGames();
+        Assertions.assertEquals(0, games.size());
+    }
 
     @Test
     public void getGamePositive() {
@@ -52,12 +56,11 @@ public class DBGameDAOTests {
         Assertions.assertNotNull(game1);
     }
 
-//    @Test
-//    @DisplayName("Duplicate game creation attempt")
-//    public void createGameNegative() {
-//        int game1ID = gameDAO.createGame("gameName1");
-//        Assertions.assertThrows(Exception.class, () -> gameDAO.createGame("gameName1"));
-//    }
+    @Test
+    public void createGameNegative() {
+        int game1ID = gameDAO.createGame(null);
+        Assertions.assertEquals(-1, game1ID);
+    }
 
     @Test
     public void updateGamePositive() {

@@ -41,6 +41,7 @@ public class DBAuthDAOTests {
 
     @Test
     public void createAuthNegative() {
+        Assertions.assertNull(authDAO.createAuth(null));
     }
 
     @Test

@@ -53,6 +53,11 @@ public class DBUserDAOTests {
     }
 
     @Test
+    public void createUserNegative() {
+        Assertions.assertNull(userDAO.createUser(null));
+    }
+
+    @Test
     public void clearUsersTest() {
         UserData newUser1 = new UserData(
                 "username1",

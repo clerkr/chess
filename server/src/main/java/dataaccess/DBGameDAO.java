@@ -82,6 +82,9 @@ public class DBGameDAO implements GameDAO {
     public int createGame(String gameName) {
 
         int gameID = -1;
+
+        if (gameName == null) { return gameID; }
+
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?)";
 
