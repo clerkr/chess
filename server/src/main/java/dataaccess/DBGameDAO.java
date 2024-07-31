@@ -15,7 +15,19 @@ public class DBGameDAO implements GameDAO {
 
     public DBGameDAO() {
         try {
-            configureDatabase();
+            final String[] createStatements = {
+                    """
+            CREATE TABLE IF NOT EXISTS games (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `whiteUsername` varchar(256) DEFAULT '',
+              `blackUsername` varchar(256) DEFAULT '',
+              `gameName` varchar(256) NOT NULL,
+              `game` TEXT NOT NULL,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+            };
+            DBConfigurer.configureDatabase(createStatements);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -149,31 +161,4 @@ public class DBGameDAO implements GameDAO {
             System.out.println(e.getMessage());
         }
     }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS games (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) DEFAULT '',
-              `blackUsername` varchar(256) DEFAULT '',
-              `gameName` varchar(256) NOT NULL,
-              `game` TEXT NOT NULL,
-              PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-    };
-
-    private void configureDatabase() throws ResponseException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
-
 }
