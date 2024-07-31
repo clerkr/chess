@@ -7,9 +7,7 @@ import org.junit.jupiter.api.Test;
 
 public class AuthServiceTests {
 
-//    MemoryAuthDAO authDAO = MemoryAuthDAO.getInstance();
-//    MemoryUserDAO userDAO = MemoryUserDAO.getInstance();
-//    MemoryGameDAO gameDAO = MemoryGameDAO.getInstance();
+    // switch these to the memory DAOs if that functionality is desired
 
     DBAuthDAO authDAO = new DBAuthDAO();
     DBUserDAO userDAO = new DBUserDAO();
