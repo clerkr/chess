@@ -1,6 +1,7 @@
 package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.interfaces.GameDAO;
 import model.GameData;
 
 import java.sql.Connection;

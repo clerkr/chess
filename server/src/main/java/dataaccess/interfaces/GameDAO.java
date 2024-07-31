@@ -1,5 +1,6 @@
-package dataaccess;
+package dataaccess.interfaces;
 
+import dataaccess.InvalidGameException;
 import model.GameData;
 
 import java.util.HashSet;

@@ -1,6 +1,8 @@
-package dataaccess;
+package dataaccess.memdao;
 
 import chess.ChessGame;
+import dataaccess.InvalidGameException;
+import dataaccess.interfaces.GameDAO;
 import model.GameData;
 
 import java.util.HashSet;
@@ -46,7 +48,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame(GameData updatedGame) throws InvalidGameException{
+    public void updateGame(GameData updatedGame) throws InvalidGameException {
         boolean found = false;
         for (GameData game : games) {
             if (game.getGameID() == updatedGame.getGameID()) {

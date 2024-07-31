@@ -1,4 +1,5 @@
-package dataaccess;
+package dataaccess.memdao;
+import dataaccess.interfaces.AuthDAO;
 import model.AuthData;
 
 import java.util.HashSet;
