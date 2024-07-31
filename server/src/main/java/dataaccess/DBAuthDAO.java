@@ -89,7 +89,7 @@ public class DBAuthDAO implements AuthDAO {
                 preparedStatement.executeUpdate();
             }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("FLAG" + e + e.getMessage());
         }
     }
 

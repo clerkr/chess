@@ -80,6 +80,7 @@ public class DBGameDAO implements GameDAO {
 
     @Override
     public int createGame(String gameName) {
+
         int gameID = -1;
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES(?, ?, ?, ?)";
@@ -127,6 +128,8 @@ public class DBGameDAO implements GameDAO {
                     throw new InvalidGameException("No game found by that ID");
                 }
             }
+        } catch (InvalidGameException e) {
+            throw e;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
