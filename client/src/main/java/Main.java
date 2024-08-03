@@ -1,11 +1,9 @@
 import Facade.FacadeGameData;
 import Facade.ServerFacade;
-import chess.*;
 import model.UserData;
 import ui.EscapeSequences;
 
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -27,12 +25,12 @@ public class Main {
                 String userCommand = scanner.nextLine();
                 String[] parsed = userCommand.split("\\s+");
 
-                switch (parsed[0]) {
+                switch (parsed[0].toLowerCase()) {
                     case "quit":
                         facade.quit();
                         break;
                     case "help":
-                        facade.help();
+                        facade.preHelp();
                         break;
                     case "register":
                         if (parsed.length != 4) {
@@ -58,7 +56,9 @@ public class Main {
                         authToken = facade.login(username, parsed[2]);
                         break;
                     default:
-                        System.out.println("ERROR: < " + parsed[0] + " > unknown command");
+                        System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
+                        facade.preHelp();
+                        break;
                 }
             }
 
@@ -68,7 +68,13 @@ public class Main {
                 String userCommand = scanner.nextLine();
                 String[] parsed = userCommand.split("\\s+");
 
-                switch (parsed[0]) {
+                switch (parsed[0].toLowerCase()) {
+                    case "help":
+                        facade.postHelp();
+                        break;
+                    case "quit":
+                        facade.quit();
+                        break;
                     case "logout":
                         if (parsed.length > 1) {
                             System.out.println("Do not provide any arguments with the logout command");
@@ -89,11 +95,11 @@ public class Main {
                         String gameName = parsed[1];
                         facade.createGame(authToken, gameName);
                         System.out.println("Game: <" + gameName + "> created");
+                        facadeGames.clear();
                     case "list":
                         facadeGames = facade.listGames(authToken);
                         break;
                     case "join":
-
                         if (facadeGames.size() < 1) {
                             System.out.println("Use the 'list' command before to this");
                             break;
@@ -129,8 +135,12 @@ public class Main {
                         } catch (NumberFormatException e) {
                             System.out.println("Please provide a valid game number");
                         }
+                        facadeGames.clear();
                         break;
-
+                    default:
+                        System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
+                        facade.postHelp();
+                        break;
                 }
             }
         }

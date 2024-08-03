@@ -1,14 +1,14 @@
 package Facade;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.UserData;
-import ui.EscapeSequences;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,12 +21,25 @@ public class ServerFacade {
         this.port = port;
     }
 
-    public void help() {
+    public void preHelp() {
         System.out.println(
                 """
                 help
                 register <username> <password> <email>
                 login <username> <password>
+                quit
+                """
+        );
+    }
+
+    public void postHelp() {
+        System.out.println(
+                """
+                help
+                create <game name>
+                join <game number> <WHITE | BLACK>
+                list - lists all games
+                logout
                 quit
                 """
         );
@@ -200,7 +213,12 @@ public class ServerFacade {
                         String gameName = (String) game.get("gameName");
                         String whiteUsername = (String) game.getOrDefault("whiteUsername", "-");
                         String blackUsername = (String) game.getOrDefault("blackUsername", "-");
-                        facadeGames.add(new FacadeGameData(counter, gameID.intValue(), gameName, whiteUsername, blackUsername));
+
+                        Gson gson = new GsonBuilder().create();
+                        String chessGameJson = gson.toJson(game.get("game"));
+                        ChessGame gameObj = gson.fromJson(chessGameJson, ChessGame.class);
+
+                        facadeGames.add(new FacadeGameData(counter, gameID.intValue(), gameName, whiteUsername, blackUsername, gameObj));
                         System.out.printf("| %-4s | %-15s | %-20s | %-20s |\n", counter, gameName, whiteUsername, blackUsername);
                         counter++;
                     }
