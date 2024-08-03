@@ -1,8 +1,11 @@
+import Facade.FacadeGameData;
 import Facade.ServerFacade;
 import chess.*;
 import model.UserData;
 import ui.EscapeSequences;
 
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -14,10 +17,9 @@ public class Main {
     public static void main(String[] args) {
         String authToken = "";
         String username = "";
+        HashSet<FacadeGameData> facadeGames = new HashSet<>();
         String helpStr = (EscapeSequences.SET_TEXT_COLOR_GREEN + "help" + EscapeSequences.RESET_TEXT_COLOR);
         System.out.printf("♕ 240 Chess Client: Type %s to get started\n", helpStr);
-
-
 
         while(true) {
             while (Objects.equals(authToken, "")) {
@@ -88,7 +90,47 @@ public class Main {
                         facade.createGame(authToken, gameName);
                         System.out.println("Game: <" + gameName + "> created");
                     case "list":
-                        facade.listGames(authToken);
+                        facadeGames = facade.listGames(authToken);
+                        break;
+                    case "join":
+
+                        if (facadeGames.size() < 1) {
+                            System.out.println("Use the 'list' command before to this");
+                            break;
+                        }
+                        try {
+                            int gameSelectorID = Integer.parseInt(parsed[1]);
+                            String teamColorSelector = parsed[2].toLowerCase();
+                            if (!(teamColorSelector.equals("white")
+                                    || teamColorSelector.equals("black"))) {
+                                System.out.println("Please use either WHITE or BLACK to define your joining color.");
+                                break;
+                            }
+                            boolean foundGame = false;
+                            for (FacadeGameData facadeGame : facadeGames) {
+
+                                if (facadeGame.selectorID != gameSelectorID) { continue; }
+                                foundGame = true;
+
+                                boolean userAlreadyJoinedCheck = (Objects.equals(username, facadeGame.blackUsername) ||
+                                        Objects.equals(username, facadeGame.whiteUsername));
+                                if (userAlreadyJoinedCheck) {
+                                    String team = Objects.equals(username, facadeGame.blackUsername) ? "black" : "white";
+                                    System.out.println("You have already joined this game as the " + team + " player");
+                                    break;
+                                }
+                                facade.joinGame(facadeGame.gameID, facadeGame.selectorID, authToken, teamColorSelector);
+                            }
+                            if (!foundGame) {
+                                System.out.println("That is not a valid game. Use 'list' to find valid game numbers");
+                                break;
+                            }
+
+                        } catch (NumberFormatException e) {
+                            System.out.println("Please provide a valid game number");
+                        }
+                        break;
+
                 }
             }
         }

@@ -2,12 +2,14 @@ package Facade;
 
 import com.google.gson.Gson;
 import model.UserData;
+import ui.EscapeSequences;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -22,10 +24,10 @@ public class ServerFacade {
     public void help() {
         System.out.println(
                 """
+                help
                 register <username> <password> <email>
                 login <username> <password>
                 quit
-                help
                 """
         );
     }
@@ -159,7 +161,6 @@ public class ServerFacade {
                 try (InputStream respBody = http.getInputStream()) {
                     InputStreamReader inputStreamReader = new InputStreamReader(respBody);
                     Map res = new Gson().fromJson(inputStreamReader, Map.class);
-                    System.out.println(res);
                 }
             } else if (statusCode == 401) {
                 System.out.println("ERROR: Could not create game");
@@ -174,7 +175,8 @@ public class ServerFacade {
         }
     }
 
-    public void listGames(String authToken) {
+    public HashSet<FacadeGameData> listGames(String authToken) {
+        HashSet<FacadeGameData> facadeGames = new HashSet<FacadeGameData>();
         try {
             URI uri = new URI("http://localhost:" + port + "/game");
             HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -189,10 +191,63 @@ public class ServerFacade {
                     InputStreamReader inputStreamReader = new InputStreamReader(respBody);
                     Map res = new Gson().fromJson(inputStreamReader, Map.class);
                     List<Map<String, Object>> games = (List<Map<String, Object>>) res.get("games");
-                    System.out.println(games);
+                    int counter = 1;
+                    System.out.println("+------+-----------------+----------------------+----------------------+");
+                    System.out.printf("| %-4s | %-15s | %-20s | %-20s |\n", "NO. ", "GAMENAME", "WHITE", "BLACK");
+                    System.out.println("+------+-----------------+----------------------+----------------------+");
+                    for (Map<String, Object> game : games) {
+                        Double gameID = (Double) game.get("gameID");
+                        String gameName = (String) game.get("gameName");
+                        String whiteUsername = (String) game.getOrDefault("whiteUsername", "-");
+                        String blackUsername = (String) game.getOrDefault("blackUsername", "-");
+                        facadeGames.add(new FacadeGameData(counter, gameID.intValue(), gameName, whiteUsername, blackUsername));
+                        System.out.printf("| %-4s | %-15s | %-20s | %-20s |\n", counter, gameName, whiteUsername, blackUsername);
+                        counter++;
+                    }
+                    System.out.println("+------+-----------------+----------------------+----------------------+");
+
                 }
             } else if (statusCode == 401) {
                 System.out.println("ERROR: Could not create game");
+            }
+
+        } catch (URISyntaxException e) {
+            System.out.println(e);
+        } catch (ProtocolException | MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return facadeGames;
+    }
+
+    public void joinGame(int gameID, int selectorID, String authToken, String playerColor) {
+        try {
+            URI uri = new URI("http://localhost:" + port + "/game");
+            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+            http.setRequestMethod("PUT");
+            http.setDoOutput(true);
+            http.addRequestProperty("Authorization", authToken);
+            http.addRequestProperty("Content-Type", "application/json");
+            var body = Map.of(
+                    "gameID", gameID,
+                    "playerColor", playerColor.toUpperCase()
+            );
+
+            try (var outputStream = http.getOutputStream()) {
+                var jsonBody = new Gson().toJson(body);
+                outputStream.write(jsonBody.getBytes());
+            }
+
+            int statusCode = http.getResponseCode();
+            if (statusCode == HttpURLConnection.HTTP_OK) {
+                try (InputStream respBody = http.getInputStream()) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                    Map res = new Gson().fromJson(inputStreamReader, Map.class);
+                    System.out.println("Joined " + selectorID);
+                }
+            } else if (statusCode == 403) {
+                System.out.println("ERROR: That color is already taken by another player in this game");
             }
 
         } catch (URISyntaxException e) {
