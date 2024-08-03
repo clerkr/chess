@@ -38,7 +38,8 @@ public class ServerFacade {
                 help
                 create <game name>
                 join <game number> <WHITE | BLACK>
-                list - lists all games
+                observer <game number>
+                list - lists all games with selection numbers
                 logout
                 quit
                 """

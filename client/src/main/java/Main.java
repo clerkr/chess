@@ -1,16 +1,79 @@
 import Facade.FacadeGameData;
 import Facade.ServerFacade;
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
+import model.GameData;
 import model.UserData;
+import org.glassfish.grizzly.utils.Pair;
 import ui.EscapeSequences;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
 
-    private static ServerFacade facade = new ServerFacade(8080);
-    private static Scanner scanner = new Scanner(System.in);
+    private static final ServerFacade facade = new ServerFacade(8080);
+    private static final Scanner scanner = new Scanner(System.in);
+
+    private static String drawPiece(ChessPiece piece) {
+        return switch (piece.getPieceType()) {
+            case PAWN -> (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? EscapeSequences.WHITE_PAWN : EscapeSequences.BLACK_PAWN;
+            case ROOK -> (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? EscapeSequences.WHITE_ROOK : EscapeSequences.BLACK_ROOK;
+            case KNIGHT -> (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? EscapeSequences.WHITE_KNIGHT : EscapeSequences.BLACK_KNIGHT;
+            case BISHOP -> (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? EscapeSequences.WHITE_BISHOP : EscapeSequences.BLACK_BISHOP;
+            case QUEEN -> (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? EscapeSequences.WHITE_QUEEN : EscapeSequences.BLACK_QUEEN;
+            case KING -> (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? EscapeSequences.WHITE_KING : EscapeSequences.BLACK_KING;
+        };
+    }
+
+    private static void drawBoards(ChessGame game, boolean whitePlayer) {
+        ChessPiece[][] board = game.getBoard().squares;
+        String resBg = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
+        boolean lightBG = true;
+        // Header and footer borders
+        HashMap<Integer, String> colLetters = new HashMap<>();
+            colLetters.put(0, "h");
+            colLetters.put(1, "g");
+            colLetters.put(2, "f");
+            colLetters.put(3, "e");
+            colLetters.put(4, "d");
+            colLetters.put(5, "c");
+            colLetters.put(6, "b");
+            colLetters.put(7, "a");
+        String borderStyle = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+        System.out.print(borderStyle + "   ");
+        for (int hcol = 0; hcol < 8; hcol++) {
+            int hloc = whitePlayer ? 7 - hcol : hcol;
+            System.out.print(" " + colLetters.get(hloc) + " ");
+        }
+        System.out.print("   " + resBg + "\n");
+        // Main body
+        for (int row = 0; row < 8; row++) {
+            int wor = (whitePlayer) ? 7 - row : row;
+            System.out.print(borderStyle + " " + (wor+1) + " " + resBg);
+            for (int col = 0; col < 8; col++) {
+                String bg = (lightBG) ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+                lightBG = !lightBG;
+                int loc = (whitePlayer) ? 7 - col : col;
+                ChessPiece pos = board[wor][loc];
+                String piece = (pos == null) ? ("   ") : drawPiece(pos);
+                System.out.print(bg + piece + resBg);
+            }
+            System.out.print(borderStyle + " " + (wor+1) + " " + resBg);
+            lightBG = !lightBG;
+            System.out.print("\n");
+        }
+        System.out.print(borderStyle + "   ");
+        for (int hcol = 0; hcol < 8; hcol++) {
+            int hloc = whitePlayer ? 7 - hcol : hcol;
+            System.out.print(" " + colLetters.get(hloc) + " ");
+        }
+        System.out.print("   " + resBg + "\n");
+        System.out.print("\n");
+    }
 
     public static void main(String[] args) {
         String authToken = "";
@@ -19,12 +82,14 @@ public class Main {
         String helpStr = (EscapeSequences.SET_TEXT_COLOR_GREEN + "help" + EscapeSequences.RESET_TEXT_COLOR);
         System.out.printf("♕ 240 Chess Client: Type %s to get started\n", helpStr);
 
+
+
         while(true) {
             while (Objects.equals(authToken, "")) {
                 System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "[LOGGED OUT] " + EscapeSequences.RESET_TEXT_COLOR + ">>> ");
                 String userCommand = scanner.nextLine();
-                String[] parsed = userCommand.split("\\s+");
 
+                String[] parsed = userCommand.split("\\s+");
                 switch (parsed[0].toLowerCase()) {
                     case "quit":
                         facade.quit();
@@ -73,6 +138,7 @@ public class Main {
                         facade.postHelp();
                         break;
                     case "quit":
+                        facade.logout(authToken);
                         facade.quit();
                         break;
                     case "logout":
@@ -100,7 +166,7 @@ public class Main {
                         facadeGames = facade.listGames(authToken);
                         break;
                     case "join":
-                        if (facadeGames.size() < 1) {
+                        if (facadeGames.isEmpty()) {
                             System.out.println("Use the 'list' command before to this");
                             break;
                         }
@@ -126,17 +192,27 @@ public class Main {
                                     break;
                                 }
                                 facade.joinGame(facadeGame.gameID, facadeGame.selectorID, authToken, teamColorSelector);
+                                ChessGame chessGame = new ChessGame();
+                                drawBoards(chessGame, false);
+                                drawBoards(chessGame, true);
                             }
                             if (!foundGame) {
                                 System.out.println("That is not a valid game. Use 'list' to find valid game numbers");
                                 break;
                             }
 
+
                         } catch (NumberFormatException e) {
                             System.out.println("Please provide a valid game number");
                         }
                         facadeGames.clear();
                         break;
+                    case "observe":
+                        int gameSelectorID = Integer.parseInt(parsed[1]);
+                        System.out.print("Observing game number " + gameSelectorID);
+                        ChessGame chessGame = new ChessGame();
+                        drawBoards(chessGame, false);
+                        drawBoards(chessGame, true);
                     default:
                         System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
                         facade.postHelp();
