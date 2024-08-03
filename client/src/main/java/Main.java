@@ -29,50 +29,59 @@ public class Main {
         };
     }
 
-    private static void drawBoards(ChessGame game, boolean whitePlayer) {
-        ChessPiece[][] board = game.getBoard().squares;
-        String resBg = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
-        boolean lightBG = true;
-        // Header and footer borders
+    private static void drawBorderHeadFoot(String borderStyle,
+                                           boolean whitePlayer,
+                                           String resStyle) {
         HashMap<Integer, String> colLetters = new HashMap<>();
-            colLetters.put(0, "h");
-            colLetters.put(1, "g");
-            colLetters.put(2, "f");
-            colLetters.put(3, "e");
-            colLetters.put(4, "d");
-            colLetters.put(5, "c");
-            colLetters.put(6, "b");
-            colLetters.put(7, "a");
-        String borderStyle = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+        colLetters.put(0, "h");
+        colLetters.put(1, "g");
+        colLetters.put(2, "f");
+        colLetters.put(3, "e");
+        colLetters.put(4, "d");
+        colLetters.put(5, "c");
+        colLetters.put(6, "b");
+        colLetters.put(7, "a");
         System.out.print(borderStyle + "   ");
         for (int hcol = 0; hcol < 8; hcol++) {
             int hloc = whitePlayer ? 7 - hcol : hcol;
             System.out.print(" " + colLetters.get(hloc) + " ");
         }
-        System.out.print("   " + resBg + "\n");
+        System.out.print("   " + resStyle + "\n");
+    }
+
+    private static void drawBoard(ChessGame game, boolean whitePlayer) {
+        ChessPiece[][] board = game.getBoard().squares;
+        String resStyle = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
+        boolean lightBG = true;
+        String borderStyle = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+        // Header border
+        drawBorderHeadFoot(borderStyle, whitePlayer, resStyle);
         // Main body
         for (int row = 0; row < 8; row++) {
             int wor = (whitePlayer) ? 7 - row : row;
-            System.out.print(borderStyle + " " + (wor+1) + " " + resBg);
+            // Left border
+            System.out.print(borderStyle + " " + (wor+1) + " " + resStyle);
             for (int col = 0; col < 8; col++) {
                 String bg = (lightBG) ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
                 lightBG = !lightBG;
                 int loc = (whitePlayer) ? 7 - col : col;
                 ChessPiece pos = board[wor][loc];
                 String piece = (pos == null) ? ("   ") : drawPiece(pos);
-                System.out.print(bg + piece + resBg);
+                System.out.print(bg + piece + resStyle);
             }
-            System.out.print(borderStyle + " " + (wor+1) + " " + resBg);
+            // Right border
+            System.out.print(borderStyle + " " + (wor+1) + " " + resStyle);
             lightBG = !lightBG;
             System.out.print("\n");
         }
-        System.out.print(borderStyle + "   ");
-        for (int hcol = 0; hcol < 8; hcol++) {
-            int hloc = whitePlayer ? 7 - hcol : hcol;
-            System.out.print(" " + colLetters.get(hloc) + " ");
-        }
-        System.out.print("   " + resBg + "\n");
+        // Footer border
+        drawBorderHeadFoot(borderStyle, whitePlayer, resStyle);
         System.out.print("\n");
+    }
+    private static void drawBoards(ChessGame game) {
+        System.out.println();
+        drawBoard(game, false);
+        drawBoard(game, true);
     }
 
     public static void main(String[] args) {
@@ -81,8 +90,6 @@ public class Main {
         HashSet<FacadeGameData> facadeGames = new HashSet<>();
         String helpStr = (EscapeSequences.SET_TEXT_COLOR_GREEN + "help" + EscapeSequences.RESET_TEXT_COLOR);
         System.out.printf("♕ 240 Chess Client: Type %s to get started\n", helpStr);
-
-
 
         while(true) {
             while (Objects.equals(authToken, "")) {
@@ -193,8 +200,7 @@ public class Main {
                                 }
                                 facade.joinGame(facadeGame.gameID, facadeGame.selectorID, authToken, teamColorSelector);
                                 ChessGame chessGame = new ChessGame();
-                                drawBoards(chessGame, false);
-                                drawBoards(chessGame, true);
+                                drawBoards(chessGame);
                             }
                             if (!foundGame) {
                                 System.out.println("That is not a valid game. Use 'list' to find valid game numbers");
@@ -208,11 +214,20 @@ public class Main {
                         facadeGames.clear();
                         break;
                     case "observe":
-                        int gameSelectorID = Integer.parseInt(parsed[1]);
-                        System.out.print("Observing game number " + gameSelectorID);
-                        ChessGame chessGame = new ChessGame();
-                        drawBoards(chessGame, false);
-                        drawBoards(chessGame, true);
+                        if (parsed.length != 2) {
+                            System.out.println("Please use 'list' to get a game number to observe");
+                            break;
+                        }
+                        try {
+                            int gameSelectorID = Integer.parseInt(parsed[1]);
+                            System.out.println("Observing game number " + gameSelectorID);
+                            ChessGame chessGame = new ChessGame();
+                            drawBoards(chessGame);
+                            break;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Please provide a valid game number");
+                            break;
+                        }
                     default:
                         System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
                         facade.postHelp();
