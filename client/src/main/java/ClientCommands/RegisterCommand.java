@@ -1,4 +1,4 @@
-package commands;
+package ClientCommands;
 
 import Facade.ServerFacade;
 import model.UserData;

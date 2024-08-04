@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.UserData;
+import ui.DrawGameList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,20 +50,19 @@ public class ServerFacade {
     public String register(UserData newUser) {
         String authToken = "";
         try {
-            URI uri = new URI("http://localhost:" + port + "/user");
-            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-            http.addRequestProperty("Content-Type", "application/json");
             var body = Map.of(
                     "username", newUser.username(),
                     "password", newUser.password(),
                     "email", newUser.email());
-
-            try (var outputStream = http.getOutputStream()) {
-                var jsonBody = new Gson().toJson(body);
-                outputStream.write(jsonBody.getBytes());
-            }
+            HttpHandler httpHandler = new HttpHandler(
+                    port,
+                    "POST",
+                    "user",
+                    authToken,
+                    body
+            );
+            HttpURLConnection http = httpHandler.establish();
+            httpHandler.runOutputStream(http);
 
             int statusCode = http.getResponseCode();
             if (statusCode == HttpURLConnection.HTTP_OK) {
@@ -76,10 +76,6 @@ public class ServerFacade {
             }
 
 
-        } catch (URISyntaxException e) {
-            System.out.println(e);
-        } catch (ProtocolException | MalformedURLException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -89,26 +85,24 @@ public class ServerFacade {
     public String login(String username, String password) {
         String authToken = "";
         try {
-            URI uri = new URI("http://localhost:" + port + "/session");
-            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-            http.addRequestProperty("Content-Type", "application/json");
             var body = Map.of(
                     "username", username,
                     "password", password
             );
-
-            try (var outputStream = http.getOutputStream()) {
-                var jsonBody = new Gson().toJson(body);
-                outputStream.write(jsonBody.getBytes());
-            }
+            HttpHandler httpHandler = new HttpHandler(
+                    port,
+                    "POST",
+                    "session",
+                    authToken,
+                    body
+            );
+            HttpURLConnection http = httpHandler.establish();
+            httpHandler.runOutputStream(http);
 
             int statusCode = http.getResponseCode();
             if (statusCode == HttpURLConnection.HTTP_OK) {
                 try (InputStream respBody = http.getInputStream()) {
                     InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-//                System.out.println(new Gson().fromJson(inputStreamReader, Map.class));
                     Map res = new Gson().fromJson(inputStreamReader, Map.class);
                     authToken = (String) res.get("authToken");
                 }
@@ -116,10 +110,6 @@ public class ServerFacade {
                 System.out.println("ERROR: Invalid username or password");
             }
 
-        } catch (URISyntaxException e) {
-            System.out.println(e);
-        } catch (ProtocolException | MalformedURLException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -133,21 +123,14 @@ public class ServerFacade {
 
     public void logout(String authToken) {
         try {
-            URI uri = new URI("http://localhost:" + port + "/session");
-            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-            http.setRequestMethod("DELETE");
-            http.addRequestProperty("Authorization", authToken);
-
+            HttpHandler httpHandler = new HttpHandler(
+                    port,
+                    "POST",
+                    "session",
+                    authToken
+            );
+            HttpURLConnection http = httpHandler.establish();
             http.connect();
-            int statusCode = http.getResponseCode();
-            if (statusCode == 401) {
-                System.out.println("ERROR: Account issue. Consider restarting the program");
-            }
-
-        } catch (URISyntaxException e) {
-            System.out.println(e);
-        } catch (ProtocolException | MalformedURLException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -155,35 +138,27 @@ public class ServerFacade {
 
     public void createGame(String authToken, String gameName) {
         try {
-            URI uri = new URI("http://localhost:" + port + "/game");
-            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-            http.addRequestProperty("Authorization", authToken);
-            http.addRequestProperty("Content-Type", "application/json");
             var body = Map.of(
                     "gameName", gameName
             );
-
-            try (var outputStream = http.getOutputStream()) {
-                var jsonBody = new Gson().toJson(body);
-                outputStream.write(jsonBody.getBytes());
-            }
+            HttpHandler httpHandler = new HttpHandler(
+                    port,
+                    "POST",
+                    "game",
+                    authToken,
+                    body
+            );
+            HttpURLConnection http = httpHandler.establish();
+            httpHandler.runOutputStream(http);
 
             int statusCode = http.getResponseCode();
             if (statusCode == HttpURLConnection.HTTP_OK) {
                 try (InputStream respBody = http.getInputStream()) {
                     InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-                    Map res = new Gson().fromJson(inputStreamReader, Map.class);
                 }
             } else if (statusCode == 401) {
                 System.out.println("ERROR: Could not create game");
             }
-
-        } catch (URISyntaxException e) {
-            System.out.println(e);
-        } catch (ProtocolException | MalformedURLException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -192,48 +167,26 @@ public class ServerFacade {
     public HashSet<FacadeGameData> listGames(String authToken) {
         HashSet<FacadeGameData> facadeGames = new HashSet<FacadeGameData>();
         try {
-            URI uri = new URI("http://localhost:" + port + "/game");
-            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-            http.setRequestMethod("GET");
-            http.addRequestProperty("Authorization", authToken);
-            http.addRequestProperty("Content-Type", "application/json");
-
+            HttpHandler httpHandler = new HttpHandler(
+                    port,
+                    "GET",
+                    "game",
+                    authToken
+            );
+            HttpURLConnection http = httpHandler.establish();
 
             int statusCode = http.getResponseCode();
-            if (statusCode == HttpURLConnection.HTTP_OK) {
-                try (InputStream respBody = http.getInputStream()) {
-                    InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-                    Map res = new Gson().fromJson(inputStreamReader, Map.class);
-                    List<Map<String, Object>> games = (List<Map<String, Object>>) res.get("games");
-                    int counter = 1;
-                    System.out.println("+------+-----------------+----------------------+----------------------+");
-                    System.out.printf("| %-4s | %-15s | %-20s | %-20s |\n", "NO. ", "GAMENAME", "WHITE", "BLACK");
-                    System.out.println("+------+-----------------+----------------------+----------------------+");
-                    for (Map<String, Object> game : games) {
-                        Double gameID = (Double) game.get("gameID");
-                        String gameName = (String) game.get("gameName");
-                        String whiteUsername = (String) game.getOrDefault("whiteUsername", "-");
-                        String blackUsername = (String) game.getOrDefault("blackUsername", "-");
-
-                        Gson gson = new GsonBuilder().create();
-                        String chessGameJson = gson.toJson(game.get("game"));
-                        ChessGame gameObj = gson.fromJson(chessGameJson, ChessGame.class);
-
-                        facadeGames.add(new FacadeGameData(counter, gameID.intValue(), gameName, whiteUsername, blackUsername, gameObj));
-                        System.out.printf("| %-4s | %-15s | %-20s | %-20s |\n", counter, gameName, whiteUsername, blackUsername);
-                        counter++;
-                    }
-                    System.out.println("+------+-----------------+----------------------+----------------------+");
-
-                }
-            } else if (statusCode == 401) {
+            if (statusCode == 401) {
                 System.out.println("ERROR: Could not create game");
             }
+            if (statusCode != HttpURLConnection.HTTP_OK) { return facadeGames; }
 
-        } catch (URISyntaxException e) {
-            System.out.println(e);
-        } catch (ProtocolException | MalformedURLException e) {
-            throw new RuntimeException(e);
+            try (InputStream respBody = http.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+                Map res = new Gson().fromJson(inputStreamReader, Map.class);
+                List<Map<String, Object>> games = (List<Map<String, Object>>) res.get("games");
+                DrawGameList.drawTable(games, facadeGames);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -242,21 +195,19 @@ public class ServerFacade {
 
     public void joinGame(int gameID, int selectorID, String authToken, String playerColor) {
         try {
-            URI uri = new URI("http://localhost:" + port + "/game");
-            HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-            http.setRequestMethod("PUT");
-            http.setDoOutput(true);
-            http.addRequestProperty("Authorization", authToken);
-            http.addRequestProperty("Content-Type", "application/json");
             var body = Map.of(
-                    "gameID", gameID,
+                    "gameID", String.valueOf(gameID),
                     "playerColor", playerColor.toUpperCase()
             );
-
-            try (var outputStream = http.getOutputStream()) {
-                var jsonBody = new Gson().toJson(body);
-                outputStream.write(jsonBody.getBytes());
-            }
+            HttpHandler httpHandler = new HttpHandler(
+                    port,
+                    "PUT",
+                    "game",
+                    authToken,
+                    body
+            );
+            HttpURLConnection http = httpHandler.establish();
+            httpHandler.runOutputStream(http);
 
             int statusCode = http.getResponseCode();
             if (statusCode == HttpURLConnection.HTTP_OK) {
@@ -269,10 +220,6 @@ public class ServerFacade {
                 System.out.println("ERROR: That color is already taken by another player in this game");
             }
 
-        } catch (URISyntaxException e) {
-            System.out.println(e);
-        } catch (ProtocolException | MalformedURLException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
