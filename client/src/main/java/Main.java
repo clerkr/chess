@@ -1,4 +1,5 @@
 import ClientCommands.CommandContext;
+import ClientCommands.PostLoginHelpCommand;
 import ClientCommands.PreLoginHelpCommand;
 import ClientCommands.QuitCommand;
 import Facade.FacadeGameData;
@@ -84,9 +85,17 @@ public class Main {
                 String userCommand = scanner.nextLine();
                 String[] parsed = userCommand.split("\\s+");
 
+                CommandContext context = new CommandContext(
+                        scanner,
+                        facade,
+                        authToken,
+                        username,
+                        facadeGames
+                );
+
                 switch (parsed[0].toLowerCase()) {
                     case "help":
-                        facade.postHelp();
+                        new PostLoginHelpCommand(context).execute();
                         break;
                     case "quit":
                         facade.logout(authToken);
