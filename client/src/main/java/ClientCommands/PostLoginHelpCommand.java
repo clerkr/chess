@@ -1,16 +1,16 @@
 package ClientCommands;
 
+import Execution.ClientExecution;
 import Facade.ServerFacade;
 
 public class PostLoginHelpCommand implements Command{
 
-    ServerFacade facade;
-    public PostLoginHelpCommand(CommandContext context) {
-        this.facade = context.getFacade();
-    }
+    ClientExecution client = ClientExecution.getInstance();
+
+    public PostLoginHelpCommand() {}
 
     @Override
     public void execute() {
-        facade.postHelp();
+        ClientExecution.facade.postHelp();
     }
 }

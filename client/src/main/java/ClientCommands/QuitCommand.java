@@ -1,16 +1,16 @@
 package ClientCommands;
 
+import Execution.ClientExecution;
 import Facade.ServerFacade;
 
 public class QuitCommand implements Command{
 
-    ServerFacade facade;
-    public QuitCommand (CommandContext context) {
-        this.facade = context.getFacade();
-    }
+    ClientExecution client = ClientExecution.getInstance();
+
+    public QuitCommand () {}
 
     @Override
     public void execute() {
-        facade.quit();
+        ClientExecution.facade.quit();
     }
 }

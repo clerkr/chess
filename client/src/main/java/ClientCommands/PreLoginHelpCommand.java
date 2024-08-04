@@ -1,16 +1,17 @@
 package ClientCommands;
 
+import Execution.ClientExecution;
 import Facade.ServerFacade;
 
 public class PreLoginHelpCommand implements Command{
 
-    ServerFacade facade;
-    public PreLoginHelpCommand(CommandContext context) {
-        this.facade = context.getFacade();
+    ClientExecution client = ClientExecution.getInstance();
+
+    public PreLoginHelpCommand() {
     }
 
     @Override
     public void execute() {
-        facade.preHelp();
+        ClientExecution.facade.preHelp();
     }
 }
