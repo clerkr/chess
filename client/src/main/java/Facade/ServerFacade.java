@@ -125,12 +125,13 @@ public class ServerFacade {
         try {
             HttpHandler httpHandler = new HttpHandler(
                     port,
-                    "POST",
+                    "DELETE",
                     "session",
                     authToken
             );
             HttpURLConnection http = httpHandler.establish();
             http.connect();
+            int responseCode = http.getResponseCode();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
