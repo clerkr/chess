@@ -123,6 +123,7 @@ public class ServerFacade {
             );
             HttpURLConnection http = httpHandler.establish();
             http.connect();
+            int responseCode = http.getResponseCode();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
