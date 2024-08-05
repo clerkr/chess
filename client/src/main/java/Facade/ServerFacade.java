@@ -25,10 +25,10 @@ public class ServerFacade {
     public void preHelp() {
         System.out.println(
                 """
-                help
-                register <username> <password> <email>
+                register <username> <password> <email> - to create a new user
                 login <username> <password>
-                quit
+                quit - exit program
+                help - present commands
                 """
         );
     }
@@ -36,14 +36,13 @@ public class ServerFacade {
     public void postHelp() {
         System.out.println(
                 """
-                help
-                create <game name>
-                join <game number> <WHITE | BLACK>
-                observer <game number>
+                create <game name> - starts a new game
+                join <game number> <WHITE | BLACK> - participate in a game by color
+                observer <game number> - for game spectation
                 list - lists all games with selection numbers
                 logout
-                quit
-                """
+                quit - exit program
+                help - present commands"""
         );
     }
 

@@ -25,7 +25,7 @@ public class JoinGameCommand implements Command{
         }
         try {
             int gameSelectorID = Integer.parseInt(client.parsed[1]);
-            if (gameSelectorID < 1 || gameSelectorID >= client.facadeGames.size()) {
+            if (gameSelectorID < 1 || gameSelectorID > client.facadeGames.size()) {
                 System.out.println("That is not a valid game id. Use 'list' to find valid game numbers");
                 return;
             }

@@ -16,8 +16,7 @@ public class RegisterCommand implements Command{
             System.out.println(
                 """
                 Follow this format for the register command:
-                register <username> <password> <email>
-                """
+                register <username> <password> <email>"""
             );
         } else {
             client.username = (client.parsed[1]);
