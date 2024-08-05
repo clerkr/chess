@@ -42,6 +42,8 @@ public class JoinGameCommand implements Command{
                 return;
             }
             if (joinedCheck(facadeGame)) { return; }
+            boolean teamFilled = filledTeamCheck(facadeGame, teamColorSelector);
+            if (teamFilled) { System.out.println("ERROR: That color is already taken by another player in this game"); return; }
             ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
 
             DrawChessBoard.drawBoards(new ChessGame());
@@ -71,6 +73,10 @@ public class JoinGameCommand implements Command{
             return true;
         }
         return false;
+    }
+
+    private boolean filledTeamCheck(FacadeGameData facadeGame, String colorSelector) {
+        return colorSelector == "white" ? facadeGame.whiteUsername == "-" : facadeGame.blackUsername == "-";
     }
 }
 
