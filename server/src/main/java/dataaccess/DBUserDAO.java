@@ -91,4 +91,18 @@ public class DBUserDAO implements UserDAO {
         return user.username();
     }
 
+    public int countUsers() {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String query = "SELECT COUNT(*) AS total FROM users";
+            try (var preparedStatement = conn.prepareStatement(query);
+                 var resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("total");
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            System.out.println("Error accessing database: " + e.getMessage());
+        }
+        return -1;
+    }
 }

@@ -109,6 +109,28 @@ public class ServerFacadeTests {
         Assertions.assertEquals(preLogoutTotal, postLogoutTotal);
     }
 
+    @Test
+    @DisplayName("Clean create game attempt")
+    public void createGame() {
+        String username = "username3";
+        String password = "password4567";
+        UserData newUser = new UserData(username, password, "user@xmail.com");
+        String authToken = facade.register(newUser);
+        int preCreateGame = gameDAO.countGames();
+        facade.createGame(authToken, "game1");
+        int postCreateGame = gameDAO.countGames();
+        Assertions.assertEquals(postCreateGame, preCreateGame + 1);
+    }
+
+    @Test
+    @DisplayName("Clean create game attempt")
+    public void createGameNeg() {
+        int preCreateGame = gameDAO.countGames();
+        facade.createGame("invalidAuthToken", "game1");
+        int postCreateGame = gameDAO.countGames();
+        Assertions.assertEquals(postCreateGame, preCreateGame);
+    }
+
 
 }
 
