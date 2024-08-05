@@ -36,7 +36,7 @@ public class ServerFacade {
                 """
                 create <game name> - starts a new game
                 join <game number> <WHITE | BLACK> - participate in a game by color
-                observer <game number> - for game spectation
+                observe <game number> - for game spectation
                 list - lists all games with selection numbers
                 logout
                 quit - exit program
