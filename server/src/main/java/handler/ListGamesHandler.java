@@ -16,7 +16,7 @@ import java.util.*;
 public class ListGamesHandler implements Route {
 
     private GameService gameService = new GameService();
-    private record DisplayGameData(int gameID, String whiteUsername, String blackUsername, String gameName) {}
+//    private record DisplayGameData(int gameID, String whiteUsername, String blackUsername, String gameName) {}
 
     public ListGamesHandler() {}
 
@@ -34,15 +34,16 @@ public class ListGamesHandler implements Route {
             ListGamesRequest serviceReq = new ListGamesRequest(authToken);
             ListGamesResult serviceRes = gameService.listGames(serviceReq);
 
-            ArrayList<DisplayGameData> displayGames = new ArrayList<>();
-            for (GameData game : serviceRes.games()) {
-                displayGames.add(new DisplayGameData(
-                        game.getGameID(),
-                        game.getWhiteUsername(),
-                        game.getBlackUsername(),
-                        game.getGameName()));
-            }
-            return new Gson().toJson(Map.of("games", displayGames));
+//            ArrayList<DisplayGameData> displayGames = new ArrayList<>();
+//            for (GameData game : serviceRes.games()) {
+//                displayGames.add(new DisplayGameData(
+//                        game.getGameID(),
+//                        game.getWhiteUsername(),
+//                        game.getBlackUsername(),
+//                        game.getGameName()));
+//            }
+//            return new Gson().toJson(Map.of("games", displayGames));
+            return new Gson().toJson(Map.of("games", serviceRes.games()));
         } catch (IllegalArgumentException | InvalidTokenException e) {
             res.status(401);
             return new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));

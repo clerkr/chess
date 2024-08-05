@@ -16,7 +16,7 @@ import java.util.HashMap;
  */
 public class ChessBoard {
 
-    ChessPiece[][] squares = new ChessPiece[8][8];
+    public ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {}
 
