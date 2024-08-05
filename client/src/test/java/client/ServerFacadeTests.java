@@ -85,4 +85,30 @@ public class ServerFacadeTests {
         String loginAuthToken = facade.login(username, password);
         Assertions.assertEquals("", loginAuthToken);
     }
+
+    @Test
+    @DisplayName("Clean logout of existing user")
+    public void logout() {
+        String username = "username2";
+        String password = "password3456";
+        UserData newUser = new UserData(username, password, "user@xmail.com");
+        String authToken = facade.register(newUser);
+        UserData loginUser = userDAO.getUser(username);
+        if (loginUser == null) { Assertions.fail(); }
+        facade.logout(authToken);
+        Assertions.assertNull(authDAO.getAuth(authToken));
+    }
+
+    @Test
+    @DisplayName("Logout attempt on auth that is not present in db table")
+    public void logoutNeg() {
+        String authToken = "fakeAuthToken";
+        int preLogoutTotal = authDAO.countAuths();
+        facade.logout(authToken);
+        int postLogoutTotal = authDAO.countAuths();
+        Assertions.assertEquals(preLogoutTotal, postLogoutTotal);
+    }
+
+
 }
+

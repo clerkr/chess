@@ -106,6 +106,21 @@ public class DBAuthDAO implements AuthDAO {
         }
     }
 
+    public int countAuths() {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String query = "SELECT COUNT(*) AS total FROM auths";
+            try (var preparedStatement = conn.prepareStatement(query);
+                 var resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("total");
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            System.out.println("Error accessing database: " + e.getMessage());
+        }
+        return -1;  // Return -1 to indicate an error
+    }
+
 
 
 
