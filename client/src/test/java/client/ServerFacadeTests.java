@@ -5,6 +5,7 @@ import Facade.ServerFacade;
 import dataaccess.DBAuthDAO;
 import dataaccess.DBGameDAO;
 import dataaccess.DBUserDAO;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -157,6 +158,36 @@ public class ServerFacadeTests {
         String authToken = facade.register(newUser);
         HashSet<FacadeGameData> games = facade.listGames(authToken);
         Assertions.assertEquals(0, games.size());
+    }
+
+    @Test
+    @DisplayName("Clean join game attempt")
+    public void joinGame() {
+        String username = "username01";
+        String password = "password4567";
+        UserData newUser = new UserData(username, password, "user@mail.com");
+        String authToken = facade.register(newUser);
+        facade.createGame(authToken, "game01");
+        facade.joinGame(1, 1,authToken, "WHITE");
+        GameData game = gameDAO.getGame(1);
+        Assertions.assertEquals(username, game.getWhiteUsername());
+    }
+
+    @Test
+    @DisplayName("Join occupied game position attempt")
+    public void joinGameNeg() {
+        UserData user1 = new UserData("username001", "password45678", "user@mail.com");
+        UserData user2 = new UserData("username002", "password45678", "user@mail.com");
+        String authToken1 = facade.register(user1);
+        String authToken2 = facade.register(user2);
+
+        facade.createGame(authToken1, "game01");
+        facade.joinGame(1, 1, authToken1, "WHITE");
+        facade.joinGame(1, 1, authToken2, "WHITE");
+
+        GameData game = gameDAO.getGame(1);
+        // Assert that the position is still occupied by the original joiner (user1)
+        Assertions.assertEquals(user1.username(), game.getWhiteUsername());
     }
 
 
