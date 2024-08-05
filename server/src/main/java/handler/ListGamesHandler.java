@@ -33,16 +33,6 @@ public class ListGamesHandler implements Route {
             String authToken = req.headers("Authorization");
             ListGamesRequest serviceReq = new ListGamesRequest(authToken);
             ListGamesResult serviceRes = gameService.listGames(serviceReq);
-
-//            ArrayList<DisplayGameData> displayGames = new ArrayList<>();
-//            for (GameData game : serviceRes.games()) {
-//                displayGames.add(new DisplayGameData(
-//                        game.getGameID(),
-//                        game.getWhiteUsername(),
-//                        game.getBlackUsername(),
-//                        game.getGameName()));
-//            }
-//            return new Gson().toJson(Map.of("games", displayGames));
             return new Gson().toJson(Map.of("games", serviceRes.games()));
         } catch (IllegalArgumentException | InvalidTokenException e) {
             res.status(401);

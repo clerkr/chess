@@ -1,4 +1,4 @@
-package ClientCommands;
+package clientcommands;
 
 public class MutableContainer<T> {
     private T value;

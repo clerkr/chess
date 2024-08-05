@@ -1,7 +1,6 @@
-package ClientCommands;
+package clientcommands;
 
-import Execution.ClientExecution;
-import Facade.ServerFacade;
+import execution.ClientExecution;
 import model.UserData;
 
 public class RegisterCommand implements Command{
@@ -23,7 +22,7 @@ public class RegisterCommand implements Command{
             String password = client.parsed[2];
             String email = client.parsed[3];
             UserData user = new UserData(client.username, password, email);
-            client.authToken = ClientExecution.facade.register(user);
+            client.authToken = ClientExecution.FACADE.register(user);
         }
     }
 }

@@ -1,7 +1,6 @@
-package ClientCommands;
+package clientcommands;
 
-import Execution.ClientExecution;
-import Facade.ServerFacade;
+import execution.ClientExecution;
 
 public class PreLoginHelpCommand implements Command{
 
@@ -12,6 +11,6 @@ public class PreLoginHelpCommand implements Command{
 
     @Override
     public void execute() {
-        ClientExecution.facade.preHelp();
+        ClientExecution.FACADE.preHelp();
     }
 }

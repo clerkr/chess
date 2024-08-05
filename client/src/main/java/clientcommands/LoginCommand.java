@@ -1,7 +1,6 @@
-package ClientCommands;
+package clientcommands;
 
-import Execution.ClientExecution;
-import model.UserData;
+import execution.ClientExecution;
 
 public class LoginCommand implements Command{
 
@@ -19,7 +18,7 @@ public class LoginCommand implements Command{
         } else {
             client.username = client.parsed[1];
             String password = client.parsed[2];
-            client.authToken = ClientExecution.facade.login(client.username, password);
+            client.authToken = ClientExecution.FACADE.login(client.username, password);
         }
     }
 }

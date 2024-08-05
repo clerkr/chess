@@ -1,6 +1,6 @@
-package ClientCommands;
+package clientcommands;
 
-import Execution.ClientExecution;
+import execution.ClientExecution;
 
 public class CreateGameCommand implements Command{
 
@@ -19,7 +19,7 @@ public class CreateGameCommand implements Command{
 
         } else {
             String gameName = client.parsed[1];
-            ClientExecution.facade.createGame(client.authToken, gameName);
+            ClientExecution.FACADE.createGame(client.authToken, gameName);
             System.out.println("Game: <" + gameName + "> created");
             client.facadeGames.clear();
         }

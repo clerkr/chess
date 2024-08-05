@@ -1,7 +1,7 @@
 package client;
 
-import Facade.FacadeGameData;
-import Facade.ServerFacade;
+import facade.FacadeGameData;
+import facade.ServerFacade;
 import dataaccess.DBAuthDAO;
 import dataaccess.DBGameDAO;
 import dataaccess.DBUserDAO;

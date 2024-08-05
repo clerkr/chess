@@ -1,6 +1,6 @@
-package ClientCommands;
+package clientcommands;
 
-import Execution.ClientExecution;
+import execution.ClientExecution;
 import chess.ChessGame;
 import ui.DrawChessBoard;
 

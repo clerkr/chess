@@ -1,6 +1,6 @@
 package ui;
 
-import Facade.FacadeGameData;
+import facade.FacadeGameData;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

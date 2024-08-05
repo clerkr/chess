@@ -1,14 +1,7 @@
-import ClientCommands.*;
-import Execution.ClientExecution;
-import Facade.FacadeGameData;
-import Facade.ServerFacade;
-import chess.ChessGame;
-import model.UserData;
-import ui.DrawChessBoard;
+import execution.ClientExecution;
+import facade.ServerFacade;
 import ui.EscapeSequences;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+
 import java.util.Scanner;
 
 public class Main {

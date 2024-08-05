@@ -1,7 +1,7 @@
-package ClientCommands;
+package clientcommands;
 
-import Execution.ClientExecution;
-import Facade.FacadeGameData;
+import execution.ClientExecution;
+import facade.FacadeGameData;
 import chess.ChessGame;
 import ui.DrawChessBoard;
 
@@ -42,7 +42,7 @@ public class JoinGameCommand implements Command{
                 return;
             }
             if (joinedCheck(facadeGame)) { return; }
-            ClientExecution.facade.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
+            ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
 
             DrawChessBoard.drawBoards(new ChessGame());
         } catch (NumberFormatException e) {

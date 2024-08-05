@@ -1,9 +1,10 @@
-package Facade;
+package facade;
 
 import com.google.gson.Gson;
-import org.glassfish.tyrus.core.wsadl.model.Endpoint;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,6 +76,13 @@ public class HttpHandler {
         }
     }
 
-
-
+    public Map runInputStream(HttpURLConnection http) {
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            return new Gson().fromJson(inputStreamReader, Map.class);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        return Map.of();
+    }
 }

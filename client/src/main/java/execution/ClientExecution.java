@@ -1,10 +1,8 @@
-package Execution;
+package execution;
 
-import ClientCommands.*;
-import Facade.FacadeGameData;
-import Facade.ServerFacade;
-import chess.ChessGame;
-import ui.DrawChessBoard;
+import clientcommands.*;
+import facade.FacadeGameData;
+import facade.ServerFacade;
 import ui.EscapeSequences;
 
 import java.util.HashSet;
@@ -15,8 +13,8 @@ public class ClientExecution {
 
     private static ClientExecution instance;
 
-    public static final ServerFacade facade = new ServerFacade(8080);
-    public static final Scanner scanner = new Scanner(System.in);
+    public static final ServerFacade FACADE = new ServerFacade(8080);
+    public static final Scanner SCANNER = new Scanner(System.in);
     public String authToken = "";
     public String username = "";
     public HashSet<FacadeGameData> facadeGames = new HashSet<>();
@@ -44,7 +42,7 @@ public class ClientExecution {
 
     private void preLoginRun() {
         System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "[LOGGED OUT] " + EscapeSequences.RESET_TEXT_COLOR + ">>> ");
-        String userCommand = scanner.nextLine();
+        String userCommand = SCANNER.nextLine();
         parsed = userCommand.split("\\s+");
         switch (parsed[0].toLowerCase()) {
             case "quit":
@@ -57,14 +55,14 @@ public class ClientExecution {
                 new LoginCommand().execute(); break;
             default:
                 System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
-                facade.preHelp();
+                FACADE.preHelp();
                 break;
         }
     }
 
     private void postLoginRun() {
         System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + "[LOGGED IN] " + EscapeSequences.RESET_TEXT_COLOR + ">>> ");
-        String userCommand = scanner.nextLine();
+        String userCommand = SCANNER.nextLine();
         parsed = userCommand.split("\\s+");
         switch (parsed[0].toLowerCase()) {
             case "help":
@@ -80,7 +78,7 @@ public class ClientExecution {
             case "create":
                 new CreateGameCommand().execute();
             case "list":
-                facadeGames = facade.listGames(authToken);
+                facadeGames = FACADE.listGames(authToken);
                 break;
             case "join":
                 new JoinGameCommand().execute();
@@ -91,7 +89,7 @@ public class ClientExecution {
                 break;
             default:
                 System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
-                facade.postHelp();
+                FACADE.postHelp();
                 break;
         }
     }

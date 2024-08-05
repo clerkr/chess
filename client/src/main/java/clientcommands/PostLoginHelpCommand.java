@@ -1,7 +1,6 @@
-package ClientCommands;
+package clientcommands;
 
-import Execution.ClientExecution;
-import Facade.ServerFacade;
+import execution.ClientExecution;
 
 public class PostLoginHelpCommand implements Command{
 
@@ -11,6 +10,6 @@ public class PostLoginHelpCommand implements Command{
 
     @Override
     public void execute() {
-        ClientExecution.facade.postHelp();
+        ClientExecution.FACADE.postHelp();
     }
 }

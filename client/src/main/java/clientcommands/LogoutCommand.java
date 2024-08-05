@@ -1,7 +1,6 @@
-package ClientCommands;
+package clientcommands;
 
-import Execution.ClientExecution;
-import model.UserData;
+import execution.ClientExecution;
 
 public class LogoutCommand implements Command{
 
@@ -11,7 +10,7 @@ public class LogoutCommand implements Command{
 
     @Override
     public void execute() {
-        ClientExecution.facade.logout(client.authToken);
+        ClientExecution.FACADE.logout(client.authToken);
         client.authToken = "";
     }
 }
