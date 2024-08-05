@@ -1,5 +1,6 @@
 package client;
 
+import Facade.FacadeGameData;
 import Facade.ServerFacade;
 import dataaccess.DBAuthDAO;
 import dataaccess.DBGameDAO;
@@ -7,6 +8,8 @@ import dataaccess.DBUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
+
+import java.util.HashSet;
 
 
 public class ServerFacadeTests {
@@ -123,13 +126,40 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @DisplayName("Clean create game attempt")
+    @DisplayName("Create game attempt with bad auth token")
     public void createGameNeg() {
         int preCreateGame = gameDAO.countGames();
         facade.createGame("invalidAuthToken", "game1");
         int postCreateGame = gameDAO.countGames();
         Assertions.assertEquals(postCreateGame, preCreateGame);
     }
+
+    @Test
+    @DisplayName("Clean list game attempt")
+    public void listGames() {
+        String username = "username3";
+        String password = "password4567";
+        UserData newUser = new UserData(username, password, "user@xmail.com");
+        String authToken = facade.register(newUser);
+        facade.createGame(authToken, "game1");
+        facade.createGame(authToken, "game2");
+        facade.createGame(authToken, "game3");
+        HashSet<FacadeGameData> games = facade.listGames(authToken);
+        Assertions.assertEquals(3, games.size());
+    }
+
+    @Test
+    @DisplayName("Empty list game attempt")
+    public void listGamesNeg() {
+        String username = "username4";
+        String password = "password1234";
+        UserData newUser = new UserData(username, password, "user@xmail.com");
+        String authToken = facade.register(newUser);
+        HashSet<FacadeGameData> games = facade.listGames(authToken);
+        Assertions.assertEquals(0, games.size());
+    }
+
+
 
 
 }
