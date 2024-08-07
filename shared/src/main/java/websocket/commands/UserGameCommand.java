@@ -57,6 +57,6 @@ public class UserGameCommand {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCommandType(), getAuthString(), getGameID());
+        return Objects.hash(getCommandType(), getAuthToken(), getGameID());
     }
 }
