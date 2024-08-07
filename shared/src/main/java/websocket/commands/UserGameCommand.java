@@ -51,7 +51,7 @@ public class UserGameCommand {
         }
         UserGameCommand that = (UserGameCommand) o;
         return getCommandType() == that.getCommandType() &&
-                Objects.equals(getAuthString(), that.getAuthString()) &&
+                Objects.equals(getAuthToken(), that.getAuthToken()) &&
                 Objects.equals(getGameID(), that.getGameID());
     }
 

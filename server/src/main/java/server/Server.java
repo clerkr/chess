@@ -1,8 +1,10 @@
 package server;
 
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import spark.*;
 import handler.*;
 
+@WebSocket
 public class Server {
 
     public int run(int desiredPort) {
@@ -18,6 +20,8 @@ public class Server {
         Spark.get("/game", new ListGamesHandler());
         Spark.post("/game", new CreateGameHandler());
         Spark.put("/game", new JoinGameHandler());
+
+        Spark.webSocket("/ws", Server.class);
 
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
