@@ -3,6 +3,7 @@ package execution;
 import clientcommands.*;
 import facade.FacadeGameData;
 import facade.ServerFacade;
+import ui.DrawPrompt;
 import ui.EscapeSequences;
 
 import java.util.HashSet;
@@ -41,7 +42,7 @@ public class ClientExecution {
     }
 
     private void preLoginRun() {
-        System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + "[LOGGED OUT] " + EscapeSequences.RESET_TEXT_COLOR + ">>> ");
+        DrawPrompt.drawLoggedOutPrompt();
         String userCommand = SCANNER.nextLine();
         parsed = userCommand.split("\\s+");
         switch (parsed[0].toLowerCase()) {
@@ -61,7 +62,8 @@ public class ClientExecution {
     }
 
     private void postLoginRun() {
-        System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + "[LOGGED IN] " + EscapeSequences.RESET_TEXT_COLOR + ">>> ");
+//        System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + "[LOGGED IN] " + EscapeSequences.RESET_TEXT_COLOR + ">>> ");
+        DrawPrompt.drawLoggedInPrompt();
         String userCommand = SCANNER.nextLine();
         parsed = userCommand.split("\\s+");
         switch (parsed[0].toLowerCase()) {

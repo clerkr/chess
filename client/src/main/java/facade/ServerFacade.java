@@ -1,8 +1,10 @@
 package facade;
 
 import com.google.gson.Gson;
+import dataaccess.ResponseException;
 import model.UserData;
 import ui.DrawGameList;
+import websocket.WebSocketFacade;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -196,15 +198,19 @@ public class ServerFacade {
             HttpURLConnection http = httpHandler.establish();
             httpHandler.runOutputStream(http);
 
+            WebSocketFacade wsf = new WebSocketFacade(port);
+
             int statusCode = http.getResponseCode();
             if (statusCode == HttpURLConnection.HTTP_OK) {
                     Map res = httpHandler.runInputStream(http);
                     System.out.println("Joined " + selectorID);
+                    wsf.connectSender(authToken, gameID);
+                    // put the message sender right here? for the wsFacade???
             } else if (statusCode == 403) {
                 System.out.println("ERROR: That color is already taken by another player in this game");
             }
 
-        } catch (IOException e) {
+        } catch (IOException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }

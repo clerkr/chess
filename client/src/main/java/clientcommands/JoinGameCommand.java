@@ -76,7 +76,8 @@ public class JoinGameCommand implements Command{
     }
 
     private boolean filledTeamCheck(FacadeGameData facadeGame, String colorSelector) {
-        return colorSelector == "white" ? facadeGame.whiteUsername == "-" : facadeGame.blackUsername == "-";
+        return colorSelector == "white" ? !Objects.equals(facadeGame.whiteUsername, "-") :
+                !Objects.equals(facadeGame.blackUsername, "-");
     }
 }
 

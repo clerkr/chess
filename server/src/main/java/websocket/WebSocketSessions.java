@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 public class WebSocketSessions {
-    public ConcurrentHashMap<Integer, HashSet<Session>> sessionMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, HashSet<Session>> sessionMap = new ConcurrentHashMap<>();
 //    public HashSet<Session> sessionSet = new HashSet<>();
 
     public void addSessionToGame(int gameID, Session session) {
@@ -24,7 +24,9 @@ public class WebSocketSessions {
     }
 
     public void removeSessionFromGame(int gameID, Session session) {
-        sessionMap.get(gameID).remove(session);
+        if (sessionMap.containsKey(gameID)) {
+            sessionMap.get(gameID).remove(session);
+        }
     }
 
     public void removeSession(Session session) {
@@ -38,14 +40,17 @@ public class WebSocketSessions {
         return sessionMap.get(gameID);
     }
 
-    public void sendGameMessage(String message, int gameID) throws IOException
-    {
-        HashSet<Session> gameSessions = sessionMap.get(gameID);
-        for (Session session : gameSessions)
-        {
+    public void sendGameMessage(String message, int gameID, Session rootSession) throws IOException {
+        HashSet<Session> gameSessions = getSessionsForGame(gameID);
+        for (Session session : gameSessions) {
+//            if (!session.isOpen() || session == rootSession) { continue; }
             if (!session.isOpen()) { continue; }
-            session.getRemote().sendString(message);
+            sendSessionMessage(message, session);
         }
+    }
+
+    public void sendSessionMessage(String message, Session session) throws IOException {
+        session.getRemote().sendString(message);
     }
 
     // I do not believe that I need a broadcast method. If I do, make a set of all Sessions
