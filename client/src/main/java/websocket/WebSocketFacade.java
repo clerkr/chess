@@ -3,6 +3,7 @@ package websocket;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
+import ui.DrawPrompt;
 import websocket.commands.ConnectUGC;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGameSM;
@@ -33,10 +34,13 @@ public class WebSocketFacade extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
             this.session.addMessageHandler( new MessageHandler.Whole<String>() {
+
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    System.out.println();
+                    System.out.print("\r\033[K");
+                    System.out.println(serverMessage.getMessage());
+                    DrawPrompt.drawLoggedInPrompt();
 //                    switch (serverMessageType) {
 //                    }
 

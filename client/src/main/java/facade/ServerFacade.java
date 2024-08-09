@@ -203,7 +203,6 @@ public class ServerFacade {
             int statusCode = http.getResponseCode();
             if (statusCode == HttpURLConnection.HTTP_OK) {
                     Map res = httpHandler.runInputStream(http);
-                    System.out.println("Joined " + selectorID);
                     wsf.connectSender(authToken, gameID);
                     // put the message sender right here? for the wsFacade???
             } else if (statusCode == 403) {
