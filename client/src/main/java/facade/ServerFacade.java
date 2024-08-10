@@ -1,5 +1,7 @@
 package facade;
 
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
 import execution.ClientExecution;
@@ -20,7 +22,8 @@ public class ServerFacade {
 
     private int port;
 
-    private WebSocketFacade wsf = new WebSocketFacade(new GameUI(), ClientExecution.PORT);
+    GameUI gameUI = new GameUI();
+    private WebSocketFacade wsf = new WebSocketFacade(gameUI, ClientExecution.PORT);
 
     public ServerFacade(int port) {
         this.port = port;
@@ -216,5 +219,33 @@ public class ServerFacade {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void observeGame(int gameID, int selectorID, String authToken) {
+        try {
+            wsf.connectSender(authToken, gameID);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void drawBoardHandler() {
+        wsf.drawGameUIBoardHandler();
+    }
+
+    public boolean checkValidMove(ChessMove move) {
+        return gameUI.checkValidMove(move);
+    }
+
+    public boolean checkPlayersTurn() {
+        return gameUI.checkPlayersTurn();
+    }
+
+    public boolean checkPiecePlayersColor(ChessMove move) {
+        return gameUI.checkPiecePlayersColor(move);
+    }
+
+    public void sendMakeMoveHandler(String authToken, int gameID, ChessMove move) {
+        wsf.makeMoveSender(authToken, gameID, move);
     }
 }

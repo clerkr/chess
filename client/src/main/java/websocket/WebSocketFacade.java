@@ -4,6 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
+import model.GameData;
 import ui.GameHandler;
 import websocket.commands.*;
 import websocket.messages.ErrorSM;
@@ -59,7 +60,8 @@ public class WebSocketFacade extends Endpoint {
 
 
     public void loadGameReceiver(Session session, LoadGameSM loadGameSM) {
-        ChessGame game = loadGameSM.getGame();
+        GameData game = loadGameSM.getGame();
+
         gameHandler.updateGame(game);
     }
 
@@ -71,8 +73,7 @@ public class WebSocketFacade extends Endpoint {
         System.out.println(errorSM.getErrorMessage());
     }
 
-    // Outbound messages for the server
-
+    // ---Outbound messages for the server--
     public void connectSender(String authToken, int gameID) throws ResponseException {
         try {
             ConnectUGC ugc = new ConnectUGC(
@@ -126,6 +127,10 @@ public class WebSocketFacade extends Endpoint {
         }
     }
     // -------------------------------------
+
+    public void drawGameUIBoardHandler() {
+        gameHandler.drawBoard();
+    }
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {

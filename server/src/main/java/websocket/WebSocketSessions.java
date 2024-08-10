@@ -46,10 +46,7 @@ public class WebSocketSessions {
 
         HashSet<Session> gameSessions = getSessionsForGame(gameID);
         for (Session session : gameSessions) {
-//            if (!session.isOpen() || session == rootSession) { continue; }
-            if (!session.isOpen()) {
-                continue;
-            }
+            if (!session.isOpen() || session == rootSession) { continue; }
             sendSessionMessage(message, session);
         }
 

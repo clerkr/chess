@@ -4,10 +4,6 @@ import clientcommands.Command;
 import dataaccess.ResponseException;
 import execution.ClientExecution;
 import facade.FacadeGameData;
-import chess.ChessGame;
-import ui.DrawChessBoard;
-import ui.GameUI;
-import websocket.WebSocketFacade;
 
 import java.util.Objects;
 
@@ -55,8 +51,6 @@ public class JoinGameCommand implements Command {
             ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
             client.gamePlayGameName = facadeGame.gameName;
             client.gamePlayGameID = facadeGame.gameID;
-
-            DrawChessBoard.drawBoards(new ChessGame());
 
         } catch (NumberFormatException e) {
             System.out.println("Please provide a valid game number");

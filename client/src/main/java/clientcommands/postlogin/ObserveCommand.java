@@ -3,6 +3,7 @@ package clientcommands.postlogin;
 import clientcommands.Command;
 import execution.ClientExecution;
 import chess.ChessGame;
+import facade.FacadeGameData;
 import ui.DrawChessBoard;
 
 public class ObserveCommand implements Command {
@@ -11,22 +12,64 @@ public class ObserveCommand implements Command {
 
     public ObserveCommand() {}
 
+//    @Override
+//    public void execute() {
+//        if (client.parsed.length != 2) {
+//            System.out.println("Please use 'list' to get a game number to observe");
+//            return;
+//        }
+//        try {
+//            int gameSelectorID = Integer.parseInt(client.parsed[1]);
+//            return;
+//        } catch (NumberFormatException e) {
+//            System.out.println("Please provide a valid game number");
+//            return;
+//        }
+//    }
+
     @Override
     public void execute() {
+        if (client.facadeGames.isEmpty()) {
+            System.out.println("Use the 'list' command before to this");
+            return;
+        }
         if (client.parsed.length != 2) {
-            System.out.println("Please use 'list' to get a game number to observe");
+            System.out.println("Incorrect argument arrangment\nUse 'help' for command guides");
             return;
         }
         try {
             int gameSelectorID = Integer.parseInt(client.parsed[1]);
-            System.out.println("Observing game number " + gameSelectorID);
-            ChessGame chessGame = new ChessGame();
-            DrawChessBoard.drawBoards(chessGame);
-            return;
+            if (gameSelectorID < 1 || gameSelectorID > client.facadeGames.size()) {
+                System.out.println("That is not a valid game id. Use 'list' to find valid game numbers");
+                return;
+            }
+
+            FacadeGameData facadeGame = findGame(gameSelectorID);
+            if (facadeGame == null) {
+                System.out.println("Could not find game");
+                return;
+            }
+
+
+            ClientExecution.FACADE.observeGame(facadeGame.gameID, facadeGame.selectorID, client.authToken);
+            client.gamePlayGameName = facadeGame.gameName;
+            client.gamePlayGameID = facadeGame.gameID;
+
         } catch (NumberFormatException e) {
             System.out.println("Please provide a valid game number");
-            return;
         }
+    }
+
+    private FacadeGameData findGame(int gameSelectorID) {
+        FacadeGameData game = null;
+        for (FacadeGameData facadeGame : client.facadeGames) {
+            if (facadeGame.selectorID != gameSelectorID) {
+                continue;
+            }
+            game = facadeGame;
+        }
+        return game;
+
     }
 
 }

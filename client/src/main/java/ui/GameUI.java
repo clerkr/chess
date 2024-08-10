@@ -1,24 +1,31 @@
 package ui;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
-import dataaccess.ResponseException;
+import chess.*;
+import model.GameData;
 import execution.ClientExecution;
 import websocket.WebSocketFacade;
+
+import java.util.Objects;
 
 public class GameUI implements GameHandler {
 
     private WebSocketFacade wsFacade = new WebSocketFacade(this, ClientExecution.PORT);
-
-    public ChessGame game = new ChessGame();
-
-
+    private ClientExecution client = ClientExecution.getInstance();
+    public GameData gameData;
 
     @Override
-    public void updateGame(ChessGame game) {
-        this.game = game;
+    public void drawBoard() {
+        boolean whitePlayerCheck = !Objects.equals(client.username, gameData.getBlackUsername());
+
+        System.out.print("\r\033[K");
+        DrawChessBoard.drawBoard(gameData.getGame(), whitePlayerCheck);
+    }
+
+    @Override
+    public void updateGame(GameData gameData) {
+        this.gameData = gameData;
+        drawBoard();
+        DrawPrompt.drawGamePlayPrompt();
     }
 
     @Override
@@ -47,8 +54,38 @@ public class GameUI implements GameHandler {
         return new ChessPosition(row, col);
     }
 
-    private ChessMove createChessMove(ChessPosition start, ChessPosition end, ChessGame game) {
-        ChessPiece piece = game.getBoard().getPiece(start);
-        return new ChessMove(start, end, piece.getPieceType());
+    public ChessGame.TeamColor getPlayerTeam() {
+        boolean whiteUserCheck = Objects.equals(gameData.getWhiteUsername(), client.username);
+        return whiteUserCheck ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+    }
+
+
+    public boolean checkPlayersTurn() {
+
+        ChessGame.TeamColor teamTurn = gameData.getGame().getTeamTurn();
+        ChessGame.TeamColor playerColor = getPlayerTeam();
+
+        return teamTurn == playerColor;
+    }
+
+    public boolean checkPiecePlayersColor(ChessMove move) {
+        ChessGame.TeamColor pieceColor =
+            gameData.getGame().getBoard().getPiece(move.getStartPosition()).getTeamColor();
+        String whiteGameUsername = gameData.getWhiteUsername();
+        String blackGameUsername =  gameData.getBlackUsername();
+        if (Objects.equals(whiteGameUsername, client.username) && ChessGame.TeamColor.WHITE == pieceColor) {
+            return true;
+        } else return Objects.equals(blackGameUsername, client.username) && ChessGame.TeamColor.BLACK == pieceColor;
+    }
+
+    public boolean checkValidMove(ChessMove move) {
+        ChessGame tempGame = new ChessGame(gameData.getGame());
+        try {
+            tempGame.makeMove(move);
+        } catch (InvalidMoveException e) {
+            return false;
+        }
+        return true;
+
     }
 }

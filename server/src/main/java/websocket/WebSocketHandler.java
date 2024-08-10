@@ -82,6 +82,9 @@ public class WebSocketHandler {
                 message
         );
         sessions.sendGameMessage(notification, gameID, session);
+
+        LoadGameSM loadGameSM = new LoadGameSM(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        sessions.sendSessionMessage(loadGameSM, session);
     }
 
     private void makeMoveReceiver(Session session, MakeMoveUGC command) {
@@ -116,7 +119,7 @@ public class WebSocketHandler {
 
             LoadGameSM sm = new LoadGameSM(
                     ServerMessage.ServerMessageType.LOAD_GAME,
-                    game
+                    updatedGame
             );
             sessions.sendGameMessage(sm, gameID, session);
 

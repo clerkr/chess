@@ -56,6 +56,19 @@ public class DrawChessBoard {
     }
 
     public static void drawBoard(ChessGame game, boolean whitePlayer) {
+
+        String turn = (game.getTeamTurn() == ChessGame.TeamColor.WHITE ?
+                "WHITE" : "BLACK") + "'s turn";
+
+        String status = !game.getIsOver() ?
+                EscapeSequences.SET_TEXT_COLOR_GREEN + "Active" + EscapeSequences.RESET_TEXT_COLOR +
+                    "\n" + turn :
+                EscapeSequences.SET_TEXT_COLOR_RED + "Finished" + EscapeSequences.RESET_TEXT_COLOR;
+
+
+
+        System.out.println("Status: " + status);
+
         ChessPiece[][] board = game.getBoard().squares;
         String resStyle = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
         boolean lightBG = true;

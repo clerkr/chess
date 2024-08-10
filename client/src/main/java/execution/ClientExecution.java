@@ -1,6 +1,7 @@
 package execution;
 
 import clientcommands.*;
+import clientcommands.gameplay.MakeMoveCommand;
 import clientcommands.postlogin.*;
 import clientcommands.prelogin.LoginCommand;
 import clientcommands.prelogin.PreLoginHelpCommand;
@@ -130,9 +131,11 @@ public class ClientExecution {
                 gamePlayGameName = "";
                 break;
             case "draw":
-//                DrawChessBoard.drawBoard(gameUI.game, true);
+                FACADE.drawBoardHandler();
                 break;
-
+            case "move":
+                new MakeMoveCommand().execute();
+                break;
             default:
                 System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
                 System.out.println(
