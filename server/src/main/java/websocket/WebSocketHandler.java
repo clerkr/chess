@@ -1,12 +1,16 @@
 package websocket;
 
+
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.DBAuthDAO;
 import dataaccess.DBGameDAO;
+import dataaccess.InvalidGameException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import websocket.commands.ConnectUGC;
+import websocket.commands.MakeMoveUGC;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 
@@ -43,7 +47,7 @@ public class WebSocketHandler {
         UserGameCommand.CommandType commandType = new Gson().fromJson(message, UserGameCommand.class).getCommandType();
         switch (commandType) {
             case CONNECT -> connectReceiver(session, new Gson().fromJson(message, ConnectUGC.class));
-            case MAKE_MOVE -> makeMoveReceiver(message);
+            case MAKE_MOVE -> makeMoveReceiver(session, new Gson().fromJson(message, MakeMoveUGC.class));
             case LEAVE -> leaveGameReceiver(message);
             case RESIGN -> resignGameReceiver(message);
         }
@@ -73,8 +77,34 @@ public class WebSocketHandler {
         sessions.sendGameMessage(new Gson().toJson(notification), gameID, session);
     }
 
-    private void makeMoveReceiver(String message) {
+    private void makeMoveReceiver(Session session, MakeMoveUGC command)
+            throws InvalidMoveException, InvalidGameException, IOException {
+        String authToken = command.getAuthToken();
+        String rootUsername = authDAO.getAuth(authToken).username();
 
+        int gameID = command.getGameID();
+        GameData gameData = gameDAO.getGame(gameID);
+        ChessGame game = gameData.getGame();
+        ChessMove move = command.getMove();
+
+        game.makeMove(move);
+        GameData updatedGame = new GameData(
+                gameID,
+                gameData.getWhiteUsername(),
+                gameData.getBlackUsername(),
+                gameData.getGameName(),
+                game
+        );
+        gameDAO.updateGame(updatedGame);
+
+
+        String message = "";
+        LoadGameSM sm = new LoadGameSM(
+                ServerMessage.ServerMessageType.LOAD_GAME,
+                message,
+                game
+        );
+        sessions.sendGameMessage(new Gson().toJson(sm), gameID, session);
     }
 
     private void leaveGameReceiver(String message) {

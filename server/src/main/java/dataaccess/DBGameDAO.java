@@ -130,13 +130,15 @@ public class DBGameDAO implements GameDAO {
     @Override
     public void updateGame(GameData updatedGame) throws InvalidGameException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String statement = "UPDATE games SET whiteUsername=?, blackUsername=?, gameName=? WHERE id=?";
+            String statement = "UPDATE games SET whiteUsername=?, blackUsername=?, gameName=?, game=? WHERE id=?";
 
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, updatedGame.getWhiteUsername());
                 preparedStatement.setString(2, updatedGame.getBlackUsername());
                 preparedStatement.setString(3, updatedGame.getGameName());
                 preparedStatement.setInt(4, updatedGame.getGameID());
+                String updatedChessGameJson = new Gson().toJson(updatedGame.getGame());
+                preparedStatement.setString(5, updatedChessGameJson);
                 int affectedRows = preparedStatement.executeUpdate();
                 if (affectedRows == 0) {
                     throw new InvalidGameException("No game found by that ID");

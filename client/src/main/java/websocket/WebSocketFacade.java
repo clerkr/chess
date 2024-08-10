@@ -1,12 +1,14 @@
 package websocket;
 
-import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
-import ui.DrawPrompt;
 import websocket.commands.ConnectUGC;
+import websocket.commands.MakeMoveUGC;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorSM;
 import websocket.messages.LoadGameSM;
+import websocket.messages.NotificationSM;
 import websocket.messages.ServerMessage;
 
 //import org.eclipse.jetty.websocket.api.Session;
@@ -37,15 +39,17 @@ public class WebSocketFacade extends Endpoint {
 
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    System.out.print("\r\033[K");
-                    System.out.println(serverMessage.getMessage());
-                    DrawPrompt.drawLoggedInPrompt();
-//                    switch (serverMessageType) {
-//                    }
+                    ServerMessage.ServerMessageType serverMessageType =
+                            new Gson().fromJson(message, ServerMessage.class).getServerMessageType();
+
+                    switch (serverMessageType) {
+                        case LOAD_GAME -> loadGameReceiver(session, new Gson().fromJson(message, LoadGameSM.class));
+                        case NOTIFICATION -> notificationReceiver(session, new Gson().fromJson(message, NotificationSM.class));
+                        case ERROR -> errorReceiver(session, new Gson().fromJson(message, ErrorSM.class);
+                    }
 
                 }
-            }); // Now finish the onMessage to make this work
+            });
 
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
@@ -54,11 +58,20 @@ public class WebSocketFacade extends Endpoint {
 
 
 
-    public void loadGameReciever(LoadGameSM serverMessage) {
+    public void loadGameReceiver(Session session, LoadGameSM loadGameSM) {
+
+    }
+
+    public void notificationReceiver(Session session, NotificationSM notification) {
+
+    }
+
+    public void errorReceiver(Session session, ErrorSM errorSM) {
 
     }
 
     // Outbound messages for the server
+
     public void connectSender(String authToken, int gameID) throws ResponseException {
         try {
             ConnectUGC ugc = new ConnectUGC(
@@ -72,11 +85,26 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
+    public void makeMoveSender(String authToken, int gameID, ChessMove move) {
+        try {
+            MakeMoveUGC ugc = new MakeMoveUGC(
+                    UserGameCommand.CommandType.MAKE_MOVE,
+                    authToken,
+                    gameID,
+                    move
+            );
+            this.session.getBasicRemote().sendText(new Gson().toJson(ugc));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // -------------------------------------
+
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
 
     }
-    // -------------------------------------
 
 
 

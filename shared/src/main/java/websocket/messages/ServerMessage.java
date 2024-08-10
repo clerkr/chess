@@ -21,13 +21,12 @@ public class ServerMessage {
 
     public ServerMessage(ServerMessageType type, String message) {
         this.serverMessageType = type;
-        this.message = message;
     }
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
     }
-    public String getMessage() { return message; }
+    public String getMessage() {return message; }
 
     @Override
     public boolean equals(Object o) {
