@@ -2,9 +2,7 @@ package clientcommands.postlogin;
 
 import clientcommands.Command;
 import execution.ClientExecution;
-import chess.ChessGame;
 import facade.FacadeGameData;
-import ui.DrawChessBoard;
 
 public class ObserveCommand implements Command {
 
@@ -50,10 +48,10 @@ public class ObserveCommand implements Command {
                 return;
             }
 
-
             ClientExecution.FACADE.observeGame(facadeGame.gameID, facadeGame.selectorID, client.authToken);
             client.gamePlayGameName = facadeGame.gameName;
             client.gamePlayGameID = facadeGame.gameID;
+            client.observing = true;
 
         } catch (NumberFormatException e) {
             System.out.println("Please provide a valid game number");

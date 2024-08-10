@@ -5,12 +5,11 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 import chess.InvalidMoveException;
 import clientcommands.Command;
+import clientcommands.gameplay.exceptions.*;
 import execution.ClientExecution;
 import facade.ServerFacade;
 import ui.DrawChessBoard;
-import websocket.WebSocketFacade;
 
-import java.util.Locale;
 import java.util.Map;
 
 public class MakeMoveCommand implements Command {
@@ -28,13 +27,17 @@ public class MakeMoveCommand implements Command {
             return;
         }
 
-        boolean playersTurn = facade.checkPlayersTurn();
-        if (!playersTurn) {
-            System.out.println("It is not your turn");
-            return;
-        }
-
         try {
+
+            boolean gameOver = facade.gameOverCheck();
+            if (gameOver) {
+                throw new GameOverException("");
+            }
+
+            boolean playersTurn = facade.checkPlayersTurn();
+            if (!playersTurn) {
+                throw new OutOfTurnAttemptException("");
+            }
 
             ChessPiece.PieceType promotionType = null;
 
@@ -66,7 +69,7 @@ public class MakeMoveCommand implements Command {
                 throw new OpponentPieceMovementException("");
             }
 
-            if (facade.checkValidMove(move)) {
+            if (!facade.checkValidMove(move)) {
                 throw new InvalidMoveException("");
             }
             facade.sendMakeMoveHandler(client.authToken, client.gamePlayGameID, move);
@@ -84,6 +87,12 @@ public class MakeMoveCommand implements Command {
             System.out.println("ERROR: Attempted to move opponent piece");
         } catch (InvalidMoveException e) {
             System.out.println("ERROR: Invalid move for selected piece");
+        } catch (OutOfTurnAttemptException e) {
+            System.out.println("ERROR: It is not your turn");
+        } catch (NullPointerException e) {
+            System.out.println("ERROR: No piece selected");
+        } catch (GameOverException e) {
+            System.out.println("ERROR: No moves can be made. Game is over");
         }
 
 

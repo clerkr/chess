@@ -1,9 +1,7 @@
 package websocket;
 
 import com.google.gson.Gson;
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.eclipse.jetty.websocket.api.Session;
-import server.Server;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -42,7 +40,7 @@ public class WebSocketSessions {
         return sessionMap.get(gameID);
     }
 
-    public void sendGameMessage(ServerMessage message, int gameID, Session rootSession) {
+    public void sendGameMessageExclusive(ServerMessage message, int gameID, Session rootSession) {
 
         HashSet<Session> gameSessions = getSessionsForGame(gameID);
         for (Session session : gameSessions) {
@@ -51,6 +49,16 @@ public class WebSocketSessions {
         }
 
     }
+
+    public void sendGameMessageInclusive(ServerMessage message, int gameID) {
+
+        HashSet<Session> gameSessions = getSessionsForGame(gameID);
+        for (Session session : gameSessions) {
+            sendSessionMessage(message, session);
+        }
+
+    }
+
 
     public void sendSessionMessage(ServerMessage message, Session session) {
         try {

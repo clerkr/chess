@@ -74,7 +74,10 @@ public class JoinGameCommand implements Command {
                 Objects.equals(client.username, facadeGame.whiteUsername));
         if (userAlreadyJoinedCheck) {
             String team = Objects.equals(client.username, facadeGame.blackUsername) ? "black" : "white";
-            System.out.println("You have already joined this game as the " + team + " player");
+            System.out.println("You are the " + team + " player");
+            ClientExecution.FACADE.observeGame(facadeGame.gameID, facadeGame.selectorID, client.authToken);
+            client.gamePlayGameName = facadeGame.gameName;
+            client.gamePlayGameID = facadeGame.gameID;
             return true;
         }
         return false;

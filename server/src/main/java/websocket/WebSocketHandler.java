@@ -12,11 +12,14 @@ import websocket.commands.*;
 import websocket.messages.*;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 
 @WebSocket
 public class WebSocketHandler {
+
 
     DBAuthDAO authDAO = new DBAuthDAO();
     DBGameDAO gameDAO = new DBGameDAO();
@@ -81,7 +84,7 @@ public class WebSocketHandler {
                 ServerMessage.ServerMessageType.NOTIFICATION,
                 message
         );
-        sessions.sendGameMessage(notification, gameID, session);
+        sessions.sendGameMessageInclusive(notification, gameID);
 
         LoadGameSM loadGameSM = new LoadGameSM(ServerMessage.ServerMessageType.LOAD_GAME, game);
         sessions.sendSessionMessage(loadGameSM, session);
@@ -97,7 +100,45 @@ public class WebSocketHandler {
             ChessGame game = gameData.getGame();
             ChessMove move = command.getMove();
 
+            String message =
+                    rootUsername + " move: " + game.getBoard().getPiece(move.getStartPosition()).getPieceType() + " " +
+                    coordMaker(move.getStartPosition()) + " -> " + coordMaker(move.getEndPosition());
+            NotificationSM notification = new NotificationSM(
+                    ServerMessage.ServerMessageType.NOTIFICATION,
+                    message
+            );
+            sessions.sendGameMessageExclusive(notification, gameID, session);
+
+
             game.makeMove(move);
+
+            String statusMessage = "";
+            if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                statusMessage = String.format("%s is in checkmate",
+                        gameData.getWhiteUsername());
+                game.setGameIsOver();
+            } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                statusMessage = String.format("%s is in checkmate",
+                        gameData.getBlackUsername());
+                game.setGameIsOver();
+            } else if (game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                statusMessage = "Stalemate reached";
+                game.setGameIsOver();
+            } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
+                statusMessage = String.format("%s is in check",
+                        gameData.getWhiteUsername());
+            } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+                statusMessage = String.format("%s is in check",
+                        gameData.getBlackUsername());
+            }
+            if (!statusMessage.isEmpty()) {
+                NotificationSM statusNotification = new NotificationSM(
+                        ServerMessage.ServerMessageType.NOTIFICATION,
+                        statusMessage
+                );
+                sessions.sendGameMessageInclusive(statusNotification, gameID);
+            }
+
             GameData updatedGame = new GameData(
                     gameID,
                     gameData.getWhiteUsername(),
@@ -107,50 +148,13 @@ public class WebSocketHandler {
             );
             gameDAO.updateGame(updatedGame);
 
-            String message = String.format(
-                    "%s moved a piece!!!", // specify the piece and the start/stop coords
-                    rootUsername
-            );
-            NotificationSM notification = new NotificationSM(
-                    ServerMessage.ServerMessageType.NOTIFICATION,
-                    message
-            );
-            sessions.sendGameMessage(notification, gameID, session);
-
             LoadGameSM sm = new LoadGameSM(
                     ServerMessage.ServerMessageType.LOAD_GAME,
                     updatedGame
             );
-            sessions.sendGameMessage(sm, gameID, session);
+            sessions.sendGameMessageInclusive(sm, gameID);
 
-            String statusMessage = "";
-            if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                statusMessage = String.format("%s is in checkmate",
-                        updatedGame.getWhiteUsername());
-            } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-                statusMessage = String.format("%s is in checkmate",
-                        updatedGame.getBlackUsername());
-            } else if (game.isInStalemate(ChessGame.TeamColor.WHITE)) {
-                statusMessage = String.format("%s is in stalemate",
-                        updatedGame.getWhiteUsername());
-            } else if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-                statusMessage = String.format("%s is in stalemate",
-                        updatedGame.getBlackUsername());
-            } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
-                statusMessage = String.format("%s is in check",
-                        updatedGame.getWhiteUsername());
-            } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                statusMessage = String.format("%s is in check",
-                        updatedGame.getBlackUsername());
-            }
 
-            if (!statusMessage.isEmpty()) {
-                NotificationSM statusNotification = new NotificationSM(
-                        ServerMessage.ServerMessageType.NOTIFICATION,
-                        statusMessage
-                );
-                sessions.sendGameMessage(statusNotification, gameID, session);
-            }
 
         } catch (InvalidMoveException | InvalidGameException e) {
             sessions.sendSessionMessage(ErrorSM.prepareErrorSM(e), session);
@@ -173,7 +177,7 @@ public class WebSocketHandler {
                 ServerMessage.ServerMessageType.NOTIFICATION,
                 message
         );
-        sessions.sendGameMessage(notification, gameID, session);
+        sessions.sendGameMessageExclusive(notification, gameID, session);
     }
 
     private void resignGameReceiver(Session session, ResignGameUGC command) {
@@ -203,13 +207,40 @@ public class WebSocketHandler {
                     ServerMessage.ServerMessageType.NOTIFICATION,
                     message
             );
-            sessions.sendGameMessage(notification, gameID, session);
+            sessions.sendGameMessageInclusive(notification, gameID);
+
+            LoadGameSM sm = new LoadGameSM(
+                    ServerMessage.ServerMessageType.LOAD_GAME,
+                    updatedGameData
+            );
+            sessions.sendGameMessageInclusive(sm, gameID);
 
         } catch (InvalidGameException e) {
             sessions.sendSessionMessage(ErrorSM.prepareErrorSM(e), session);
         }
     }
 
+    private String coordMaker(ChessPosition pos) {
 
+        HashMap<Integer, String> colLettersfromNums = new HashMap<>(
+                Map.of(
+                        0, "h",
+                        1, "g",
+                        2, "f",
+                        3, "e",
+                        4, "d",
+                        5, "c",
+                        6, "b",
+                        7, "a"
+                )
+        );
+
+        int row = pos.getRow();
+        int col = pos.getColumn();
+
+        return colLettersfromNums.get(col-1) + row;
+
+
+    }
 
 }

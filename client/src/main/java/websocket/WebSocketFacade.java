@@ -61,7 +61,6 @@ public class WebSocketFacade extends Endpoint {
 
     public void loadGameReceiver(Session session, LoadGameSM loadGameSM) {
         GameData game = loadGameSM.getGame();
-
         gameHandler.updateGame(game);
     }
 

@@ -21,9 +21,16 @@ public class DrawPrompt {
     }
 
     public static void drawGamePlayPrompt() {
+
+        String drawObserving = "";
+        if (client.observing) {
+            drawObserving = "observing: ";
+        }
+
+
         System.out.print(
                 "\n" +
-                EscapeSequences.SET_TEXT_COLOR_BLUE + "[" + client.gamePlayGameName +"] " + EscapeSequences.RESET_TEXT_COLOR +
+                EscapeSequences.SET_TEXT_COLOR_BLUE + "[" + drawObserving + client.gamePlayGameName +"] " + EscapeSequences.RESET_TEXT_COLOR +
                 ">>> ");
     }
 

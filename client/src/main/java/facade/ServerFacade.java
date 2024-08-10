@@ -229,6 +229,10 @@ public class ServerFacade {
         }
     }
 
+    public void resignGameHandler(String authToken, int gameID) {
+        wsf.resignGameSender(authToken, gameID);
+    }
+
     public void drawBoardHandler() {
         wsf.drawGameUIBoardHandler();
     }
@@ -247,5 +251,9 @@ public class ServerFacade {
 
     public void sendMakeMoveHandler(String authToken, int gameID, ChessMove move) {
         wsf.makeMoveSender(authToken, gameID, move);
+    }
+
+    public boolean gameOverCheck() {
+        return gameUI.gameData.getGame().getIsOver();
     }
 }

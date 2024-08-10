@@ -2,17 +2,14 @@ package execution;
 
 import clientcommands.*;
 import clientcommands.gameplay.MakeMoveCommand;
+import clientcommands.gameplay.ResignCommand;
 import clientcommands.postlogin.*;
 import clientcommands.prelogin.LoginCommand;
 import clientcommands.prelogin.PreLoginHelpCommand;
 import clientcommands.prelogin.RegisterCommand;
-import dataaccess.ResponseException;
 import facade.FacadeGameData;
 import facade.ServerFacade;
-import ui.DrawChessBoard;
 import ui.DrawPrompt;
-import ui.GameUI;
-import websocket.WebSocketFacade;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -29,6 +26,7 @@ public class ClientExecution {
     public String username = "";
     public String gamePlayGameName = "";
     public int gamePlayGameID = -1;
+    public boolean observing = false;
     public HashSet<FacadeGameData> facadeGames = new HashSet<>();
     public String[] parsed = new String[10];
 
@@ -129,12 +127,16 @@ public class ClientExecution {
                 break;
             case "leave":
                 gamePlayGameName = "";
+                observing = false;
                 break;
             case "draw":
                 FACADE.drawBoardHandler();
                 break;
             case "move":
                 new MakeMoveCommand().execute();
+                break;
+            case "resign":
+                new ResignCommand().execute();
                 break;
             default:
                 System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
