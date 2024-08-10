@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class WebSocketSessions {
     private ConcurrentHashMap<Integer, HashSet<Session>> sessionMap = new ConcurrentHashMap<>();
-//    public HashSet<Session> sessionSet = new HashSet<>();
 
     public void addSessionToGame(int gameID, Session session) {
         if (sessionMap.containsKey(gameID)) {
