@@ -4,7 +4,7 @@ import chess.ChessMove;
 
 public class MakeMoveUGC extends UserGameCommand {
 
-    private ChessMove move;
+    private final ChessMove move;
 
     public MakeMoveUGC(CommandType commandType, String authToken, Integer gameID, ChessMove move) {
         super(commandType, authToken, gameID);

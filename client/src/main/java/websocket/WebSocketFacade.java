@@ -1,11 +1,11 @@
 package websocket;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
-import websocket.commands.ConnectUGC;
-import websocket.commands.MakeMoveUGC;
-import websocket.commands.UserGameCommand;
+import ui.GameHandler;
+import websocket.commands.*;
 import websocket.messages.ErrorSM;
 import websocket.messages.LoadGameSM;
 import websocket.messages.NotificationSM;
@@ -24,14 +24,13 @@ public class WebSocketFacade extends Endpoint {
     GameHandler gameHandler;
     int port;
 
-//    public WebSocketFacade(GameHandler gameHandler, int port) throws ResponseException {
-    public WebSocketFacade(int port) throws ResponseException {
+    public WebSocketFacade(GameHandler gameHandler, int port) throws ResponseException {
         try {
             this.port = port;
             String url = String.format("ws://localhost:%d/ws", port);
             URI socketURI = new URI(url);
 
-//            this.gameHandler = gameHandler;
+            this.gameHandler = gameHandler;
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -45,7 +44,7 @@ public class WebSocketFacade extends Endpoint {
                     switch (serverMessageType) {
                         case LOAD_GAME -> loadGameReceiver(session, new Gson().fromJson(message, LoadGameSM.class));
                         case NOTIFICATION -> notificationReceiver(session, new Gson().fromJson(message, NotificationSM.class));
-                        case ERROR -> errorReceiver(session, new Gson().fromJson(message, ErrorSM.class);
+                        case ERROR -> errorReceiver(session, new Gson().fromJson(message, ErrorSM.class));
                     }
 
                 }
@@ -57,17 +56,17 @@ public class WebSocketFacade extends Endpoint {
     }
 
 
-
     public void loadGameReceiver(Session session, LoadGameSM loadGameSM) {
-
+        ChessGame game = loadGameSM.getGame();
+        gameHandler.updateGame(game);
     }
 
     public void notificationReceiver(Session session, NotificationSM notification) {
-
+        gameHandler.printMessage(notification.getMessage());
     }
 
     public void errorReceiver(Session session, ErrorSM errorSM) {
-
+        System.out.println(errorSM.getErrorMessage());
     }
 
     // Outbound messages for the server
@@ -99,6 +98,31 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
+    public void leaveGameSender(String authToken, int gameID) {
+        try {
+            LeaveGameUGC ugc = new LeaveGameUGC(
+                    UserGameCommand.CommandType.LEAVE,
+                    authToken,
+                    gameID
+            );
+            this.session.getBasicRemote().sendText(new Gson().toJson(ugc));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void resignGameSender(String authToken, int gameID) {
+        try {
+            ResignGameUGC ugc = new ResignGameUGC(
+                    UserGameCommand.CommandType.RESIGN,
+                    authToken,
+                    gameID
+            );
+            this.session.getBasicRemote().sendText(new Gson().toJson(ugc));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     // -------------------------------------
 
     @Override

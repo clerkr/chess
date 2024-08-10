@@ -4,8 +4,34 @@ import chess.ChessGame;
 import chess.ChessPiece;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class DrawChessBoard {
+
+    public static HashMap<Integer, String> colLettersfromNums = new HashMap<>(
+            Map.of(
+            0, "h",
+            1, "g",
+            2, "f",
+            3, "e",
+            4, "d",
+            5, "c",
+            6, "b",
+            7, "a"
+            )
+    );
+    public static Map<String, Integer> colNumsFromLetters = new HashMap<>(
+            Map.of(
+                    "h", 0,
+                    "g", 1,
+                    "f", 2,
+                    "e", 3,
+                    "d", 4,
+                    "c", 5,
+                    "b", 6,
+                    "a", 7
+            )
+    );
 
     private static String drawPiece(ChessPiece piece) {
         return switch (piece.getPieceType()) {
@@ -21,24 +47,15 @@ public class DrawChessBoard {
     private static void drawBorderHeadFoot(String borderStyle,
                                            boolean whitePlayer,
                                            String resStyle) {
-        HashMap<Integer, String> colLetters = new HashMap<>();
-        colLetters.put(0, "h");
-        colLetters.put(1, "g");
-        colLetters.put(2, "f");
-        colLetters.put(3, "e");
-        colLetters.put(4, "d");
-        colLetters.put(5, "c");
-        colLetters.put(6, "b");
-        colLetters.put(7, "a");
         System.out.print(borderStyle + "   ");
         for (int hcol = 0; hcol < 8; hcol++) {
             int hloc = whitePlayer ? 7 - hcol : hcol;
-            System.out.print(" " + colLetters.get(hloc) + " ");
+            System.out.print(" " + colLettersfromNums.get(hloc) + " ");
         }
         System.out.print("   " + resStyle + "\n");
     }
 
-    private static void drawBoard(ChessGame game, boolean whitePlayer) {
+    public static void drawBoard(ChessGame game, boolean whitePlayer) {
         ChessPiece[][] board = game.getBoard().squares;
         String resStyle = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
         boolean lightBG = true;

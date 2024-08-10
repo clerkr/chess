@@ -1,7 +1,10 @@
 package websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.eclipse.jetty.websocket.api.Session;
+import server.Server;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -40,17 +43,26 @@ public class WebSocketSessions {
         return sessionMap.get(gameID);
     }
 
-    public void sendGameMessage(String message, int gameID, Session rootSession) throws IOException {
+    public void sendGameMessage(ServerMessage message, int gameID, Session rootSession) {
+
         HashSet<Session> gameSessions = getSessionsForGame(gameID);
         for (Session session : gameSessions) {
 //            if (!session.isOpen() || session == rootSession) { continue; }
-            if (!session.isOpen()) { continue; }
+            if (!session.isOpen()) {
+                continue;
+            }
             sendSessionMessage(message, session);
         }
+
     }
 
-    public void sendSessionMessage(String message, Session session) throws IOException {
-        session.getRemote().sendString(message);
+    public void sendSessionMessage(ServerMessage message, Session session) {
+        try {
+            String messageJson = new Gson().toJson(message);
+            session.getRemote().sendString(messageJson);
+        } catch (IOException e) {
+            System.out.println("Failed to send client a message: " + e.getMessage());
+        }
     }
 
     // I do not believe that I need a broadcast method. If I do, make a set of all Sessions

@@ -198,18 +198,14 @@ public class ServerFacade {
             HttpURLConnection http = httpHandler.establish();
             httpHandler.runOutputStream(http);
 
-            WebSocketFacade wsf = new WebSocketFacade(port);
-
             int statusCode = http.getResponseCode();
             if (statusCode == HttpURLConnection.HTTP_OK) {
                     Map res = httpHandler.runInputStream(http);
-                    wsf.connectSender(authToken, gameID);
                     // put the message sender right here? for the wsFacade???
             } else if (statusCode == 403) {
                 System.out.println("ERROR: That color is already taken by another player in this game");
             }
-
-        } catch (IOException | ResponseException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
