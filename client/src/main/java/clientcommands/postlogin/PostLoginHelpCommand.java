@@ -1,8 +1,9 @@
-package clientcommands;
+package clientcommands.postlogin;
 
+import clientcommands.Command;
 import execution.ClientExecution;
 
-public class PostLoginHelpCommand implements Command{
+public class PostLoginHelpCommand implements Command {
 
     ClientExecution client = ClientExecution.getInstance();
 

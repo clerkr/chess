@@ -1,5 +1,6 @@
-package clientcommands;
+package clientcommands.postlogin;
 
+import clientcommands.Command;
 import execution.ClientExecution;
 import facade.FacadeGameData;
 import chess.ChessGame;
@@ -7,7 +8,7 @@ import ui.DrawChessBoard;
 
 import java.util.Objects;
 
-public class JoinGameCommand implements Command{
+public class JoinGameCommand implements Command {
 
     ClientExecution client = ClientExecution.getInstance();
 
@@ -44,9 +45,11 @@ public class JoinGameCommand implements Command{
             if (joinedCheck(facadeGame)) { return; }
             boolean teamFilled = filledTeamCheck(facadeGame, teamColorSelector);
             if (teamFilled) { System.out.println("ERROR: That color is already taken by another player in this game"); return; }
-            ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
 
+            ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
+            client.gamePlayGameName = facadeGame.gameName;
             DrawChessBoard.drawBoards(new ChessGame());
+
         } catch (NumberFormatException e) {
             System.out.println("Please provide a valid game number");
         }

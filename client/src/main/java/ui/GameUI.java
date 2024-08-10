@@ -8,7 +8,8 @@ import websocket.WebSocketFacade;
 
 public class GameUI implements GameHandler {
 
-    WebSocketFacade wsFacade;
+    private WebSocketFacade wsFacade;
+    public ChessGame game = new ChessGame();
 
 //    System.out.print("\r\033[K");
 //    System.out.println(serverMessage.getMessage());
@@ -16,7 +17,7 @@ public class GameUI implements GameHandler {
 
     @Override
     public void updateGame(ChessGame game) {
-
+        this.game = game;
     }
 
     @Override

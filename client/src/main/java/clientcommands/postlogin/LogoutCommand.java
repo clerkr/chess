@@ -1,8 +1,9 @@
-package clientcommands;
+package clientcommands.postlogin;
 
+import clientcommands.Command;
 import execution.ClientExecution;
 
-public class LogoutCommand implements Command{
+public class LogoutCommand implements Command {
 
     ClientExecution client = ClientExecution.getInstance();
 

@@ -1,9 +1,10 @@
-package clientcommands;
+package clientcommands.prelogin;
 
+import clientcommands.Command;
 import execution.ClientExecution;
 import model.UserData;
 
-public class RegisterCommand implements Command{
+public class RegisterCommand implements Command {
 
     ClientExecution client = ClientExecution.getInstance();
 

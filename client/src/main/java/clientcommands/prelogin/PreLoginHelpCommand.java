@@ -1,8 +1,9 @@
-package clientcommands;
+package clientcommands.prelogin;
 
+import clientcommands.Command;
 import execution.ClientExecution;
 
-public class PreLoginHelpCommand implements Command{
+public class PreLoginHelpCommand implements Command {
 
     ClientExecution client = ClientExecution.getInstance();
 

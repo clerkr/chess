@@ -1,10 +1,11 @@
-package clientcommands;
+package clientcommands.postlogin;
 
+import clientcommands.Command;
 import execution.ClientExecution;
 import chess.ChessGame;
 import ui.DrawChessBoard;
 
-public class ObserveCommand implements Command{
+public class ObserveCommand implements Command {
 
     ClientExecution client = ClientExecution.getInstance();
 
