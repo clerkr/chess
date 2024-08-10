@@ -136,9 +136,9 @@ public class DBGameDAO implements GameDAO {
                 preparedStatement.setString(1, updatedGame.getWhiteUsername());
                 preparedStatement.setString(2, updatedGame.getBlackUsername());
                 preparedStatement.setString(3, updatedGame.getGameName());
-                preparedStatement.setInt(4, updatedGame.getGameID());
                 String updatedChessGameJson = new Gson().toJson(updatedGame.getGame());
-                preparedStatement.setString(5, updatedChessGameJson);
+                preparedStatement.setString(4, updatedChessGameJson);
+                preparedStatement.setInt(5, updatedGame.getGameID());
                 int affectedRows = preparedStatement.executeUpdate();
                 if (affectedRows == 0) {
                     throw new InvalidGameException("No game found by that ID");

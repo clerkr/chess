@@ -4,16 +4,17 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import dataaccess.ResponseException;
+import execution.ClientExecution;
 import websocket.WebSocketFacade;
 
 public class GameUI implements GameHandler {
 
-    private WebSocketFacade wsFacade;
+    private WebSocketFacade wsFacade = new WebSocketFacade(this, ClientExecution.PORT);
+
     public ChessGame game = new ChessGame();
 
-//    System.out.print("\r\033[K");
-//    System.out.println(serverMessage.getMessage());
-//    DrawPrompt.drawLoggedInPrompt();
+
 
     @Override
     public void updateGame(ChessGame game) {
@@ -22,8 +23,11 @@ public class GameUI implements GameHandler {
 
     @Override
     public void printMessage(String message) {
-
+        System.out.print("\r\033[K");
+        DrawPrompt.printNotification(message);
+        DrawPrompt.drawGamePlayPrompt();
     }
+
 
     // rawPos examples: a1, e7
     private ChessPosition createChessPosition(String rawPos) throws Exception {

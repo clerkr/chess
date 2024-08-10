@@ -24,7 +24,7 @@ public class WebSocketFacade extends Endpoint {
     GameHandler gameHandler;
     int port;
 
-    public WebSocketFacade(GameHandler gameHandler, int port) throws ResponseException {
+    public WebSocketFacade(GameHandler gameHandler, int port) {
         try {
             this.port = port;
             String url = String.format("ws://localhost:%d/ws", port);
@@ -51,7 +51,9 @@ public class WebSocketFacade extends Endpoint {
             });
 
         } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new ResponseException(500, ex.getMessage());
+
+             System.out.println(new ResponseException(500, ex.getMessage()));
+
         }
     }
 

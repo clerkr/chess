@@ -1,16 +1,22 @@
 package clientcommands.postlogin;
 
 import clientcommands.Command;
+import dataaccess.ResponseException;
 import execution.ClientExecution;
 import facade.FacadeGameData;
 import chess.ChessGame;
 import ui.DrawChessBoard;
+import ui.GameUI;
+import websocket.WebSocketFacade;
 
 import java.util.Objects;
+
 
 public class JoinGameCommand implements Command {
 
     ClientExecution client = ClientExecution.getInstance();
+
+
 
     public JoinGameCommand() {}
 
@@ -48,6 +54,8 @@ public class JoinGameCommand implements Command {
 
             ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
             client.gamePlayGameName = facadeGame.gameName;
+            client.gamePlayGameID = facadeGame.gameID;
+
             DrawChessBoard.drawBoards(new ChessGame());
 
         } catch (NumberFormatException e) {
@@ -79,8 +87,13 @@ public class JoinGameCommand implements Command {
     }
 
     private boolean filledTeamCheck(FacadeGameData facadeGame, String colorSelector) {
-        return colorSelector == "white" ? !Objects.equals(facadeGame.whiteUsername, "-") :
-                !Objects.equals(facadeGame.blackUsername, "-");
+
+        boolean whiteIsFilled = !Objects.equals(facadeGame.whiteUsername, "-");
+        boolean blackIsFilled = !Objects.equals(facadeGame.blackUsername, "-");
+
+        return Objects.equals(colorSelector, "white") ?
+                whiteIsFilled :
+                blackIsFilled;
     }
 }
 

@@ -66,7 +66,7 @@ public class WebSocketHandler {
         sessions.addSessionToGame(gameID, session);
 
         String message;
-        if (color.isEmpty()) {
+        if (!color.isEmpty()) {
             message = String.format(
                     "%s joined the game (%s) as the %s player",
                     rootUsername, gameName, color

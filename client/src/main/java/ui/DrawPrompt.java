@@ -26,4 +26,14 @@ public class DrawPrompt {
                 EscapeSequences.SET_TEXT_COLOR_BLUE + "[" + client.gamePlayGameName +"] " + EscapeSequences.RESET_TEXT_COLOR +
                 ">>> ");
     }
+
+    public static void printNotification(String message) {
+        System.out.print(
+                "\n" +
+                EscapeSequences.SET_TEXT_COLOR_YELLOW +
+                        "(?!) " +
+                EscapeSequences.RESET_TEXT_COLOR +
+                        message
+        );
+    }
 }

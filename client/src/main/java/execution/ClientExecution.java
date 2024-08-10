@@ -5,12 +5,13 @@ import clientcommands.postlogin.*;
 import clientcommands.prelogin.LoginCommand;
 import clientcommands.prelogin.PreLoginHelpCommand;
 import clientcommands.prelogin.RegisterCommand;
+import dataaccess.ResponseException;
 import facade.FacadeGameData;
 import facade.ServerFacade;
 import ui.DrawChessBoard;
 import ui.DrawPrompt;
-import ui.GameHandler;
 import ui.GameUI;
+import websocket.WebSocketFacade;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -19,17 +20,16 @@ import java.util.Scanner;
 public class ClientExecution {
 
     private static ClientExecution instance;
-    public static final int port = 8080;
-    public static final ServerFacade FACADE = new ServerFacade(port);
+    public static final int PORT = 8080;
+    public static final ServerFacade FACADE = new ServerFacade(PORT);
     public static final Scanner SCANNER = new Scanner(System.in);
 
     public String authToken = "";
     public String username = "";
     public String gamePlayGameName = "";
+    public int gamePlayGameID = -1;
     public HashSet<FacadeGameData> facadeGames = new HashSet<>();
     public String[] parsed = new String[10];
-
-    private GameUI gameUI = new GameUI();
 
 
     private ClientExecution() {}
@@ -112,7 +112,7 @@ public class ClientExecution {
 
     // Just a dupe rn... add in other commands
     private void gamePlayRun() {
-        DrawPrompt.drawLoggedInPrompt();
+        DrawPrompt.drawGamePlayPrompt();
         String userCommand = SCANNER.nextLine();
         parsed = userCommand.split("\\s+");
         switch (parsed[0].toLowerCase()) {
@@ -126,11 +126,23 @@ public class ClientExecution {
                         resign - forfeiture (confirmation is prompted)"""
                 );
                 break;
+            case "leave":
+                gamePlayGameName = "";
+                break;
             case "draw":
-                DrawChessBoard.drawBoard(gameUI.game, true);
+//                DrawChessBoard.drawBoard(gameUI.game, true);
+                break;
+
             default:
                 System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
-                FACADE.postHelp();
+                System.out.println(
+                        """
+                        draw - redraws the current state of the game's board
+                        leave - return from gameplay
+                        move [start coordinate] [end coordinate] - coordinates should be provided as column letter-row number pairs (e.g. 'a1,' 'g5,' or 'c8'
+                        moves [piece coordinate] - highlights valid moves for the piece on the provided coordinate
+                        resign - forfeiture (confirmation is prompted)"""
+                );
                 break;
         }
     }
