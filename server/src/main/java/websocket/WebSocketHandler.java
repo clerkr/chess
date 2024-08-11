@@ -94,6 +94,16 @@ public class WebSocketHandler {
         }
     }
 
+    private ChessGame.TeamColor getPlayerColor(String username, GameData gameData) {
+        if (Objects.equals(username, gameData.getWhiteUsername())) {
+            return ChessGame.TeamColor.WHITE;
+        } else if (Objects.equals(username, gameData.getBlackUsername())) {
+            return ChessGame.TeamColor.BLACK;
+        } else {
+            return null;
+        }
+    }
+
     private void makeMoveReceiver(Session session, MakeMoveUGC command) {
         try {
             String authToken = command.getAuthToken();
@@ -101,6 +111,9 @@ public class WebSocketHandler {
 
             int gameID = command.getGameID();
             GameData gameData = gameDAO.getGame(gameID);
+
+            ChessGame.TeamColor rootColor = getPlayerColor(rootUsername, gameData);
+            if (rootColor == null) { throw new Exception("Observers cannot make moves"); }
             ChessGame game = gameData.getGame();
 
             if (game.getIsOver()) {
@@ -108,6 +121,10 @@ public class WebSocketHandler {
             }
 
             ChessMove move = command.getMove();
+
+            if (rootColor != game.getBoard().getPiece(move.getStartPosition()).getTeamColor()) {
+                throw new Exception("Cannot move opponents pieces");
+            }
 
             String message =
                     rootUsername + " move: " + game.getBoard().getPiece(move.getStartPosition()).getPieceType() + " " +
