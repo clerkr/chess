@@ -218,6 +218,13 @@ public class WebSocketHandler {
             ChessGame game = gameData.getGame();
             String gameName = gameDAO.getGame(gameID).getGameName();
 
+            if (
+                    !Objects.equals(rootUsername, gameData.getWhiteUsername()) &&
+                    !Objects.equals(rootUsername, gameData.getBlackUsername())
+            ) {
+                throw new Exception("Observers cannot resign");
+            }
+
             game.setGameIsOver();
 
             GameData updatedGameData = new GameData(
@@ -244,7 +251,7 @@ public class WebSocketHandler {
 //            );
 //            sessions.sendGameMessageInclusive(sm, gameID);
 
-        } catch (InvalidGameException e) {
+        } catch (Exception e) {
             sessions.sendSessionMessage(ErrorSM.prepareErrorSM(e), session);
         }
     }
