@@ -238,11 +238,11 @@ public class WebSocketHandler {
             );
             sessions.sendGameMessageInclusive(notification, gameID);
 
-            LoadGameSM sm = new LoadGameSM(
-                    ServerMessage.ServerMessageType.LOAD_GAME,
-                    updatedGameData
-            );
-            sessions.sendGameMessageInclusive(sm, gameID);
+//            LoadGameSM sm = new LoadGameSM(
+//                    ServerMessage.ServerMessageType.LOAD_GAME,
+//                    updatedGameData
+//            );
+//            sessions.sendGameMessageInclusive(sm, gameID);
 
         } catch (InvalidGameException e) {
             sessions.sendSessionMessage(ErrorSM.prepareErrorSM(e), session);

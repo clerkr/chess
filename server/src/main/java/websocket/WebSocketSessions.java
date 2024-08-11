@@ -64,7 +64,7 @@ public class WebSocketSessions {
         try {
             String messageJson = new Gson().toJson(message);
             session.getRemote().sendString(messageJson);
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Failed to send client a message: " + e.getMessage());
         }
     }
