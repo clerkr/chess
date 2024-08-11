@@ -52,42 +52,49 @@ public class WebSocketHandler {
     }
 
     private void connectReceiver(Session session, ConnectUGC command) {
-        String authToken = command.getAuthToken();
-        String rootUsername = authDAO.getAuth(authToken).username();
+        try {
+            String authToken = command.getAuthToken();
+            String rootUsername = authDAO.getAuth(authToken).username();
 
-        int gameID = command.getGameID();
-        GameData game = gameDAO.getGame(gameID);
+            int gameID = command.getGameID();
+            GameData game = gameDAO.getGame(gameID);
 
-        String color = "";
-        if (Objects.equals(game.getBlackUsername(), rootUsername)) {
-            color = "BLACK";
-        } else if (Objects.equals(game.getWhiteUsername(), rootUsername)) {
-            color = "WHITE";
-        }
+            String color = "";
+            if (Objects.equals(game.getBlackUsername(), rootUsername)) {
+                color = "BLACK";
+            } else if (Objects.equals(game.getWhiteUsername(), rootUsername)) {
+                color = "WHITE";
+            }
 
-        String gameName = gameDAO.getGame(gameID).getGameName();
-        sessions.addSessionToGame(gameID, session);
+            String gameName = gameDAO.getGame(gameID).getGameName();
+            sessions.addSessionToGame(gameID, session);
 
-        String message;
-        if (!color.isEmpty()) {
-            message = String.format(
-                    "%s joined the game (%s) as the %s player",
-                    rootUsername, gameName, color
+            String message;
+            if (!color.isEmpty()) {
+                message = String.format(
+                        "%s joined the game (%s) as the %s player",
+                        rootUsername, gameName, color
+                );
+            } else {
+                message = String.format(
+                        "%s joined the game (%s) as an observer",
+                        rootUsername, gameName
+                );
+            }
+            NotificationSM notification = new NotificationSM(
+                    ServerMessage.ServerMessageType.NOTIFICATION,
+                    message
             );
-        } else {
-            message = String.format(
-                    "%s joined the game (%s) as an observer",
-                    rootUsername, gameName
-            );
-        }
-        NotificationSM notification = new NotificationSM(
-                ServerMessage.ServerMessageType.NOTIFICATION,
-                message
-        );
-        sessions.sendGameMessageExclusive(notification, gameID, session);
+            sessions.sendGameMessageExclusive(notification, gameID, session);
 
-        LoadGameSM loadGameSM = new LoadGameSM(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        sessions.sendSessionMessage(loadGameSM, session);
+            LoadGameSM loadGameSM = new LoadGameSM(ServerMessage.ServerMessageType.LOAD_GAME, game);
+            sessions.sendSessionMessage(loadGameSM, session);
+        } catch (Exception e) {
+            ErrorSM errorSM = new ErrorSM(
+                    ServerMessage.ServerMessageType.ERROR,
+                    "ERROR: " + e.getMessage());
+            sessions.sendSessionMessage(errorSM, session);
+        }
     }
 
     private void makeMoveReceiver(Session session, MakeMoveUGC command) {
