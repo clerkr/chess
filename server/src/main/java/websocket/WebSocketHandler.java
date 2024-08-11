@@ -90,10 +90,7 @@ public class WebSocketHandler {
             LoadGameSM loadGameSM = new LoadGameSM(ServerMessage.ServerMessageType.LOAD_GAME, game);
             sessions.sendSessionMessage(loadGameSM, session);
         } catch (Exception e) {
-            ErrorSM errorSM = new ErrorSM(
-                    ServerMessage.ServerMessageType.ERROR,
-                    "ERROR: " + e.getMessage());
-            sessions.sendSessionMessage(errorSM, session);
+            sessions.sendSessionMessage(ErrorSM.prepareErrorSM(e), session);
         }
     }
 
@@ -105,11 +102,19 @@ public class WebSocketHandler {
             int gameID = command.getGameID();
             GameData gameData = gameDAO.getGame(gameID);
             ChessGame game = gameData.getGame();
+
+            if (game.getIsOver()) {
+                throw new Exception("The game has already concluded");
+            }
+
             ChessMove move = command.getMove();
 
             String message =
                     rootUsername + " move: " + game.getBoard().getPiece(move.getStartPosition()).getPieceType() + " " +
                     coordMaker(move.getStartPosition()) + " -> " + coordMaker(move.getEndPosition());
+
+            game.makeMove(move);
+
             NotificationSM notification = new NotificationSM(
                     ServerMessage.ServerMessageType.NOTIFICATION,
                     message
@@ -117,7 +122,7 @@ public class WebSocketHandler {
             sessions.sendGameMessageExclusive(notification, gameID, session);
 
 
-            game.makeMove(move);
+
 
             String statusMessage = "";
             if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
@@ -163,7 +168,7 @@ public class WebSocketHandler {
 
 
 
-        } catch (InvalidMoveException | InvalidGameException e) {
+        } catch (Exception e) {
             sessions.sendSessionMessage(ErrorSM.prepareErrorSM(e), session);
         }
     }
