@@ -191,22 +191,48 @@ public class WebSocketHandler {
     }
 
     private void leaveGameReceiver(Session session, LeaveGameUGC command) {
-        String authToken = command.getAuthToken();
-        String rootUsername = authDAO.getAuth(authToken).username();
-        int gameID = command.getGameID();
-        String gameName = gameDAO.getGame(gameID).getGameName();
+        try {
+            String authToken = command.getAuthToken();
+            String rootUsername = authDAO.getAuth(authToken).username();
+            int gameID = command.getGameID();
+            GameData gameData = gameDAO.getGame(gameID);
+            String gameName = gameData.getGameName();
 
-        sessions.removeSessionFromGame(gameID, session);
+            String newWhite = gameData.getWhiteUsername();
+            String newBlack = gameData.getBlackUsername();
 
-        String message = String.format(
-                "%s left the game (%s)",
-                rootUsername, gameName
-        );
-        NotificationSM notification = new NotificationSM(
-                ServerMessage.ServerMessageType.NOTIFICATION,
-                message
-        );
-        sessions.sendGameMessageExclusive(notification, gameID, session);
+            if (Objects.equals(rootUsername, gameData.getWhiteUsername())) {
+                GameData updatedGameData = new GameData(
+                        gameID,
+                        null,
+                        gameData.getBlackUsername(),
+                        gameName,
+                        gameData.getGame());
+                gameDAO.updateGame(updatedGameData);
+            } else if (Objects.equals(rootUsername, gameData.getBlackUsername())) {
+                GameData updatedGameData = new GameData(
+                        gameID,
+                        gameData.getWhiteUsername(),
+                        null,
+                        gameName,
+                        gameData.getGame());
+                gameDAO.updateGame(updatedGameData);
+            }
+
+            sessions.removeSessionFromGame(gameID, session);
+
+            String message = String.format(
+                    "%s left the gameData (%s)",
+                    rootUsername, gameName
+            );
+            NotificationSM notification = new NotificationSM(
+                    ServerMessage.ServerMessageType.NOTIFICATION,
+                    message
+            );
+            sessions.sendGameMessageExclusive(notification, gameID, session);
+        } catch (Exception e) {
+            sessions.sendSessionMessage(ErrorSM.prepareErrorSM(e), session);
+        }
     }
 
     private void resignGameReceiver(Session session, ResignGameUGC command) {
