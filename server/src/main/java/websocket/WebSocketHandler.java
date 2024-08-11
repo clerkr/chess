@@ -225,6 +225,10 @@ public class WebSocketHandler {
                 throw new Exception("Observers cannot resign");
             }
 
+            if (game.getIsOver()) {
+                throw new Exception("Game is already over");
+            }
+
             game.setGameIsOver();
 
             GameData updatedGameData = new GameData(
