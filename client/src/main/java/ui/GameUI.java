@@ -19,7 +19,6 @@ public class GameUI implements GameHandler {
 
         System.out.print("\r\033[K");
         DrawChessBoard.drawBoard(gameData.getGame(), whitePlayerCheck);
-        DrawPrompt.drawGamePlayPrompt();
     }
 
     @Override

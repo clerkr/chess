@@ -1,5 +1,7 @@
 package execution;
 
+import chess.ChessGame;
+import chess.ChessPosition;
 import clientcommands.*;
 import clientcommands.gameplay.LeaveCommand;
 import clientcommands.gameplay.MakeMoveCommand;
@@ -10,6 +12,7 @@ import clientcommands.prelogin.PreLoginHelpCommand;
 import clientcommands.prelogin.RegisterCommand;
 import facade.FacadeGameData;
 import facade.ServerFacade;
+import ui.DrawChessBoard;
 import ui.DrawPrompt;
 
 import java.util.HashSet;
@@ -41,15 +44,15 @@ public class ClientExecution {
     }
 
     public void run() {
-
-        while(true) {
-            while (Objects.equals(authToken, "")) {
-                preLoginRun();
-            }
-            while (authToken.length() > 1) {
-                postLoginRun();
-            }
-        }
+        DrawChessBoard.drawHighlightedBoard(new ChessGame(), true, new ChessPosition(7,5));
+//        while(true) {
+//            while (Objects.equals(authToken, "")) {
+//                preLoginRun();
+//            }
+//            while (authToken.length() > 1) {
+//                postLoginRun();
+//            }
+//        }
     }
 
     private void preLoginRun() {
