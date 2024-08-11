@@ -44,14 +44,21 @@ public class JoinGameCommand implements Command {
                 System.out.println("Could not find game");
                 return;
             }
-            if (joinedCheck(facadeGame)) { return; }
-            boolean teamFilled = filledTeamCheck(facadeGame, teamColorSelector);
-            if (teamFilled) { System.out.println("ERROR: That color is already taken by another player in this game"); return; }
+            if (joinedCheck(facadeGame)) {
+                ClientExecution.FACADE.observeGame(facadeGame.gameID, facadeGame.selectorID, client.authToken);
+                client.gamePlayGameName = facadeGame.gameName;
+                client.gamePlayGameID = facadeGame.gameID;
+            } else {
+                boolean teamFilled = filledTeamCheck(facadeGame, teamColorSelector);
+                if (teamFilled) {
+                    System.out.println("ERROR: That color is already taken by another player in this game");
+                    return;
+                }
 
-            ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
-            client.gamePlayGameName = facadeGame.gameName;
-            client.gamePlayGameID = facadeGame.gameID;
-
+                ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
+                client.gamePlayGameName = facadeGame.gameName;
+                client.gamePlayGameID = facadeGame.gameID;
+            }
         } catch (NumberFormatException e) {
             System.out.println("Please provide a valid game number");
         }
@@ -75,9 +82,6 @@ public class JoinGameCommand implements Command {
         if (userAlreadyJoinedCheck) {
             String team = Objects.equals(client.username, facadeGame.blackUsername) ? "black" : "white";
             System.out.println("You are the " + team + " player");
-            ClientExecution.FACADE.observeGame(facadeGame.gameID, facadeGame.selectorID, client.authToken);
-            client.gamePlayGameName = facadeGame.gameName;
-            client.gamePlayGameID = facadeGame.gameID;
             return true;
         }
         return false;

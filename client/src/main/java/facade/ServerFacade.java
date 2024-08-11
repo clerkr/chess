@@ -17,6 +17,7 @@ import java.net.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ServerFacade {
 
@@ -229,6 +230,10 @@ public class ServerFacade {
         }
     }
 
+    public void leaveGame(String authToken, int gameID) {
+        wsf.leaveGameSender(authToken, gameID);
+    }
+
     public void resignGameHandler(String authToken, int gameID) {
         wsf.resignGameSender(authToken, gameID);
     }
@@ -244,6 +249,8 @@ public class ServerFacade {
     public boolean checkPlayersTurn() {
         return gameUI.checkPlayersTurn();
     }
+
+
 
     public boolean checkPiecePlayersColor(ChessMove move) {
         return gameUI.checkPiecePlayersColor(move);

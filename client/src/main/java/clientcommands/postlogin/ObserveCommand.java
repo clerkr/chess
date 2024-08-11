@@ -4,6 +4,8 @@ import clientcommands.Command;
 import execution.ClientExecution;
 import facade.FacadeGameData;
 
+import java.util.Objects;
+
 public class ObserveCommand implements Command {
 
     ClientExecution client = ClientExecution.getInstance();
@@ -51,11 +53,18 @@ public class ObserveCommand implements Command {
             ClientExecution.FACADE.observeGame(facadeGame.gameID, facadeGame.selectorID, client.authToken);
             client.gamePlayGameName = facadeGame.gameName;
             client.gamePlayGameID = facadeGame.gameID;
-            client.observing = true;
+            if (!checkPlayerInGame(facadeGame)){
+                client.observing = true;
+            }
 
         } catch (NumberFormatException e) {
             System.out.println("Please provide a valid game number");
         }
+    }
+
+    private boolean checkPlayerInGame(FacadeGameData facadeGameData) {
+        return Objects.equals(client.username, facadeGameData.blackUsername) ||
+                Objects.equals(client.username, facadeGameData.whiteUsername);
     }
 
     private FacadeGameData findGame(int gameSelectorID) {

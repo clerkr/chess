@@ -1,6 +1,7 @@
 package execution;
 
 import clientcommands.*;
+import clientcommands.gameplay.LeaveCommand;
 import clientcommands.gameplay.MakeMoveCommand;
 import clientcommands.gameplay.ResignCommand;
 import clientcommands.postlogin.*;
@@ -126,16 +127,25 @@ public class ClientExecution {
                 );
                 break;
             case "leave":
-                gamePlayGameName = "";
+//                gamePlayGameName = "";
+                new LeaveCommand().execute();
                 observing = false;
                 break;
             case "draw":
                 FACADE.drawBoardHandler();
                 break;
             case "move":
+                if (observing) {
+                    System.out.println("Observers cannot move pieces");
+                    break;
+                }
                 new MakeMoveCommand().execute();
                 break;
             case "resign":
+                if (observing) {
+                    System.out.println("Observers cannot resign from the game");
+                    break;
+                }
                 new ResignCommand().execute();
                 break;
             default:

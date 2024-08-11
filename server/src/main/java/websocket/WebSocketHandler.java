@@ -84,7 +84,7 @@ public class WebSocketHandler {
                 ServerMessage.ServerMessageType.NOTIFICATION,
                 message
         );
-        sessions.sendGameMessageInclusive(notification, gameID);
+        sessions.sendGameMessageExclusive(notification, gameID, session);
 
         LoadGameSM loadGameSM = new LoadGameSM(ServerMessage.ServerMessageType.LOAD_GAME, game);
         sessions.sendSessionMessage(loadGameSM, session);

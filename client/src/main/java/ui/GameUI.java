@@ -36,6 +36,7 @@ public class GameUI implements GameHandler {
     }
 
 
+
     // rawPos examples: a1, e7
     private ChessPosition createChessPosition(String rawPos) throws Exception {
         String rowStr = rawPos.substring(1,2);
@@ -88,4 +89,6 @@ public class GameUI implements GameHandler {
         return true;
 
     }
+
+
 }

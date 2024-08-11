@@ -38,9 +38,9 @@ public class DrawPrompt {
         System.out.print(
                 "\n" +
                 EscapeSequences.SET_TEXT_COLOR_YELLOW +
-                        "(?!) " +
-                EscapeSequences.RESET_TEXT_COLOR +
-                        message
+                        message +
+                EscapeSequences.RESET_TEXT_COLOR
+
         );
     }
 }
