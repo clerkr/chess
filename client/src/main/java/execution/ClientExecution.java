@@ -117,16 +117,15 @@ public class ClientExecution {
         DrawPrompt.drawGamePlayPrompt();
         String userCommand = SCANNER.nextLine();
         parsed = userCommand.split("\\s+");
+        String helpMessage = """
+                draw - redraws the current state of the game's board
+                leave - return from gameplay
+                move [start coordinate] [end coordinate] - coordinates should be provided as column letter-row number pairs (e.g. 'a1,' 'g5,' or 'c8'
+                moves [piece coordinate] - highlights valid moves for the piece on the provided coordinate
+                resign - forfeiture (confirmation is prompted)""";
         switch (parsed[0].toLowerCase()) {
             case "help":
-                System.out.println(
-                        """
-                        draw - redraws the current state of the game's board
-                        leave - return from gameplay
-                        move [start coordinate] [end coordinate] - coordinates should be provided as column letter-row number pairs (e.g. 'a1,' 'g5,' or 'c8'
-                        moves [piece coordinate] - highlights valid moves for the piece on the provided coordinate
-                        resign - forfeiture (confirmation is prompted)"""
-                );
+                System.out.println(helpMessage);
                 break;
             case "leave":
 //                gamePlayGameName = "";
@@ -155,14 +154,7 @@ public class ClientExecution {
                 break;
             default:
                 System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
-                System.out.println(
-                        """
-                        draw - redraws the current state of the game's board
-                        leave - return from gameplay
-                        move [start coordinate] [end coordinate] - coordinates should be provided as column letter-row number pairs (e.g. 'a1,' 'g5,' or 'c8'
-                        moves [piece coordinate] - highlights valid moves for the piece on the provided coordinate
-                        resign - forfeiture (confirmation is prompted)"""
-                );
+                System.out.println(helpMessage);
                 break;
         }
     }
