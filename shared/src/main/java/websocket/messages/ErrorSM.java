@@ -17,7 +17,7 @@ public class ErrorSM extends ServerMessage{
 
 
     public static ErrorSM prepareErrorSM(Exception e) {
-        String errorMessage = "ERROR: " + e.toString();
+        String errorMessage = "ERROR: " + e.getMessage();
         return new ErrorSM(
                 ServerMessageType.ERROR,
                 errorMessage
