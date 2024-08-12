@@ -5,6 +5,7 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.GameData;
+import ui.DrawPrompt;
 import ui.GameHandler;
 import websocket.commands.*;
 import websocket.messages.ErrorSM;
@@ -62,6 +63,8 @@ public class WebSocketFacade extends Endpoint {
     public void loadGameReceiver(Session session, LoadGameSM loadGameSM) {
         GameData game = loadGameSM.getGame();
         gameHandler.updateGame(game);
+        drawGameUIBoardHandler();
+        DrawPrompt.drawGamePlayPrompt();
     }
 
     public void notificationReceiver(Session session, NotificationSM notification) {
