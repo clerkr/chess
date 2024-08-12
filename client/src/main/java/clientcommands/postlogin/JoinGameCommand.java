@@ -1,7 +1,6 @@
 package clientcommands.postlogin;
 
 import clientcommands.Command;
-import dataaccess.ResponseException;
 import execution.ClientExecution;
 import facade.FacadeGameData;
 
