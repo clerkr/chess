@@ -34,22 +34,4 @@ public class HighlightMoveCommand implements Command {
 
 
 
-    private ChessPosition parseCoordStringAsPos(String coord) throws CoordinateFormatException, NumberFormatException, ColumnLetterFormatException {
-
-        if (coord.length() != 2) {throw new CoordinateFormatException("");}
-
-        String startColLetter = coord.substring(0,1);
-        if (!colNumsFromLetters.containsKey(startColLetter)) {
-            System.out.println();
-            throw new ColumnLetterFormatException("placeholder message");
-        }
-        int col = colNumsFromLetters.get(startColLetter) + 1;
-
-        int row = Integer.parseInt(coord.substring(1, 2));
-        if (row < 1 || row > 8) {throw new NumberFormatException("Row num out of range");}
-
-        return new ChessPosition(row, col);
-    }
-
-
 }

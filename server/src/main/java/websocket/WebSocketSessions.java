@@ -29,12 +29,6 @@ public class WebSocketSessions {
         }
     }
 
-    public void removeSession(Session session) {
-        for (int gameID : sessionMap.keySet()) {
-            HashSet<Session> sessions = sessionMap.get(gameID);
-            sessions.remove(session);
-        }
-    }
 
     public HashSet<Session> getSessionsForGame(int gameID) {
         return sessionMap.get(gameID);
@@ -69,6 +63,5 @@ public class WebSocketSessions {
         }
     }
 
-    // I do not believe that I need a broadcast method. If I do, make a set of all Sessions
 
 }

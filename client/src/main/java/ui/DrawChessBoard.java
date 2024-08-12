@@ -140,11 +140,6 @@ public class DrawChessBoard {
         System.out.print("\n");
     }
 
-    public static void drawBoards(ChessGame game) {
-        System.out.println();
-        drawBoard(game, false);
-        drawBoard(game, true);
-    }
 
 
 }
