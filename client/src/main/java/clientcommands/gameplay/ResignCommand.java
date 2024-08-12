@@ -21,7 +21,11 @@ public class ResignCommand implements Command {
             return;
         }
 
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "Are you sure you want to resign? " + EscapeSequences.RESET_TEXT_COLOR + "Type 'yes' to confirm: ");
+        System.out.println(
+                EscapeSequences.SET_TEXT_COLOR_MAGENTA +
+                        "Are you sure you want to resign? " +
+                EscapeSequences.RESET_TEXT_COLOR +
+                        "Type 'yes' to confirm: ");
         String resignConfirm = SCANNER.nextLine();
 
         if (Objects.equals(resignConfirm.strip().toLowerCase(), "yes")) {

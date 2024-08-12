@@ -60,7 +60,7 @@ public class GameUI implements GameHandler {
                             row < 1 || row > 8 ||
                             col < 1 || col > 8
             )) {
-                throw new Exception("Invalid coordinate format"); // TODO: specify this exception
+                throw new Exception("Invalid coordinate format");
             }
 
             return new ChessPosition(row, col);
@@ -88,7 +88,9 @@ public class GameUI implements GameHandler {
         String blackGameUsername =  gameData.getBlackUsername();
         if (Objects.equals(whiteGameUsername, client.username) && ChessGame.TeamColor.WHITE == pieceColor) {
             return true;
-        } else return Objects.equals(blackGameUsername, client.username) && ChessGame.TeamColor.BLACK == pieceColor;
+        } else {
+            return Objects.equals(blackGameUsername, client.username) && ChessGame.TeamColor.BLACK == pieceColor;
+        }
     }
 
     public boolean checkValidMove(ChessMove move) {
