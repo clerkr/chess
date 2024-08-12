@@ -12,21 +12,6 @@ public class ObserveCommand implements Command {
 
     public ObserveCommand() {}
 
-//    @Override
-//    public void execute() {
-//        if (client.parsed.length != 2) {
-//            System.out.println("Please use 'list' to get a game number to observe");
-//            return;
-//        }
-//        try {
-//            int gameSelectorID = Integer.parseInt(client.parsed[1]);
-//            return;
-//        } catch (NumberFormatException e) {
-//            System.out.println("Please provide a valid game number");
-//            return;
-//        }
-//    }
-
     @Override
     public void execute() {
         if (client.facadeGames.isEmpty()) {
