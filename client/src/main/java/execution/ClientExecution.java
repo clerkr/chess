@@ -120,7 +120,7 @@ public class ClientExecution {
         String helpMessage = """
                 draw - redraws the current state of the game's board
                 leave - return from gameplay
-                move [start coordinate] [end coordinate] - coordinates should be provided as column letter-row number pairs (e.g. 'a1,' 'g5,' or 'c8'
+                move [start coordinate] [end coordinate] (e.g. 'a1,' 'g5,' or 'c8'
                 moves [piece coordinate] - highlights valid moves for the piece on the provided coordinate
                 resign - forfeiture (confirmation is prompted)""";
         switch (parsed[0].toLowerCase()) {
