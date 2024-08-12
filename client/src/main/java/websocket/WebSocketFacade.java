@@ -53,7 +53,7 @@ public class WebSocketFacade extends Endpoint {
 
         } catch (DeploymentException | IOException | URISyntaxException ex) {
 
-             System.out.println(new ResponseException(500, ex.getMessage()));
+             System.out.println(ex.getMessage());
 
         }
     }
@@ -73,7 +73,7 @@ public class WebSocketFacade extends Endpoint {
     }
 
     // ---Outbound messages for the server--
-    public void connectSender(String authToken, int gameID) throws ResponseException {
+    public void connectSender(String authToken, int gameID) throws Exception {
         try {
             ConnectUGC ugc = new ConnectUGC(
                     UserGameCommand.CommandType.CONNECT,
@@ -82,7 +82,7 @@ public class WebSocketFacade extends Endpoint {
             );
             this.session.getBasicRemote().sendText(new Gson().toJson(ugc));
         } catch (IOException e) {
-            throw new ResponseException(500, e.getMessage());
+            throw new Exception(e.getMessage());
         }
     }
 
