@@ -4,7 +4,6 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
-import dataaccess.ResponseException;
 import execution.ClientExecution;
 import model.UserData;
 import ui.DrawGameList;
@@ -212,7 +211,7 @@ public class ServerFacade {
                     Map res = httpHandler.runInputStream(http);
                     try {
                         wsf.connectSender(authToken, gameID);
-                    } catch (ResponseException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
             } else if (statusCode == 403) {
@@ -226,7 +225,7 @@ public class ServerFacade {
     public void observeGame(int gameID, int selectorID, String authToken) {
         try {
             wsf.connectSender(authToken, gameID);
-        } catch (ResponseException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

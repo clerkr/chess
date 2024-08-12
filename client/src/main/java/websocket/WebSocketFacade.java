@@ -4,7 +4,6 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
-import dataaccess.ResponseException;
 import model.GameData;
 import ui.GameHandler;
 import websocket.commands.*;
