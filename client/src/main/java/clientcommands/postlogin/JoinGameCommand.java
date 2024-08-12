@@ -51,12 +51,14 @@ public class JoinGameCommand implements Command {
                 boolean teamFilled = filledTeamCheck(facadeGame, teamColorSelector);
                 if (teamFilled) {
                     System.out.println("ERROR: That color is already taken by another player in this game");
-                    return;
-                }
+                } else {
 
-                ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
-                client.gamePlayGameName = facadeGame.gameName;
-                client.gamePlayGameID = facadeGame.gameID;
+                    boolean joined = ClientExecution.FACADE.joinGame(facadeGame.gameID, facadeGame.selectorID, client.authToken, teamColorSelector);
+                    if (joined) {
+                        client.gamePlayGameName = facadeGame.gameName;
+                        client.gamePlayGameID = facadeGame.gameID;
+                    }
+                }
             }
         } catch (NumberFormatException e) {
             System.out.println("Please provide a valid game number");

@@ -222,7 +222,7 @@ public class WebSocketHandler {
             sessions.removeSessionFromGame(gameID, session);
 
             String message = String.format(
-                    "%s left the gameData (%s)",
+                    "%s left the game (%s)",
                     rootUsername, gameName
             );
             NotificationSM notification = new NotificationSM(

@@ -190,7 +190,7 @@ public class ServerFacade {
         return facadeGames;
     }
 
-    public void joinGame(int gameID, int selectorID, String authToken, String playerColor) {
+    public boolean joinGame(int gameID, int selectorID, String authToken, String playerColor) {
         try {
             var body = Map.of(
                     "gameID", String.valueOf(gameID),
@@ -215,11 +215,13 @@ public class ServerFacade {
                         throw new RuntimeException(e);
                     }
             } else if (statusCode == 403) {
-                System.out.println("ERROR: That color is already taken by another player in this game");
+                throw new Exception("ERROR: That color is already taken by another player in this game");
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
         }
+        return true;
     }
 
     public void observeGame(int gameID, int selectorID, String authToken) {
