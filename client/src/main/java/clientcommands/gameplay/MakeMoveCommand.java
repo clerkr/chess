@@ -35,7 +35,7 @@ public class MakeMoveCommand implements Command {
 
             boolean playersTurn = facade.checkPlayersTurn();
             if (!playersTurn) {
-                throw new OutOfTurnAttemptException("");
+                throw new OutOfTurnAttemptException("ERROR: It is not your turn");
             }
 
             String rawPromType = client.parsed[3].toLowerCase();
@@ -47,23 +47,15 @@ public class MakeMoveCommand implements Command {
             ChessMove move = prepMove(startCoord, endCoord, promotionType);
 
             if (!facade.checkPiecePlayersColor(move)) {
-                throw new OpponentPieceMovementException("");
+                throw new OpponentPieceMovementException("ERROR: Attempted to move opponent piece");
             }
 
             if (!facade.checkValidMove(move)) {
-                throw new InvalidMoveException("");
+                throw new InvalidMoveException("ERROR: Invalid move for selected piece");
             }
             facade.sendMakeMoveHandler(client.authToken, client.gamePlayGameID, move);
 
 
-        } catch (NumberFormatException e) {
-            System.out.println("ERROR: row numbers must be between 1-8");
-        } catch (OpponentPieceMovementException e) {
-            System.out.println("ERROR: Attempted to move opponent piece");
-        } catch (InvalidMoveException e) {
-            System.out.println("ERROR: Invalid move for selected piece");
-        } catch (OutOfTurnAttemptException e) {
-            System.out.println("ERROR: It is not your turn");
         } catch (NullPointerException e) {
             System.out.println("ERROR: No piece selected");
         } catch (Exception e) {
@@ -103,31 +95,31 @@ public class MakeMoveCommand implements Command {
 
     private ChessMove prepMove(String startPos,
                                String endPos,
-                               ChessPiece.PieceType promotionType) throws ColumnLetterFormatException, CoordinateFormatException {
-        try {
-            ChessPosition start = parseCoordStringAsPos(startPos);
-            ChessPosition end = parseCoordStringAsPos(endPos);
-            return new ChessMove(start, end, promotionType);
-        } catch (ColumnLetterFormatException e) {
-            throw new ColumnLetterFormatException("ERROR: positions can only have a column letter of a-h");
-        } catch (CoordinateFormatException e) {
-            throw new CoordinateFormatException("ERROR: Invalid coordinate format");
-        }
+                               ChessPiece.PieceType promotionType)
+            throws ColumnLetterFormatException,
+            CoordinateFormatException,
+            NumberFormatException
+    {
+        ChessPosition start = parseCoordStringAsPos(startPos);
+        ChessPosition end = parseCoordStringAsPos(endPos);
+        return new ChessMove(start, end, promotionType);
+
     }
 
-    private ChessPosition parseCoordStringAsPos(String coord) throws CoordinateFormatException, NumberFormatException, ColumnLetterFormatException {
+    private ChessPosition parseCoordStringAsPos(String coord)
+            throws CoordinateFormatException, NumberFormatException, ColumnLetterFormatException {
 
-        if (coord.length() != 2) {throw new CoordinateFormatException("");}
+        if (coord.length() != 2) {throw new CoordinateFormatException("ERROR: Invalid coordinate format");}
 
         String startColLetter = coord.substring(0,1);
         if (!colNumsFromLetters.containsKey(startColLetter)) {
             System.out.println();
-            throw new ColumnLetterFormatException("placeholder message");
+            throw new ColumnLetterFormatException("ERROR: positions can only have a column letter of a-h");
         }
         int col = colNumsFromLetters.get(startColLetter) + 1;
 
         int row = Integer.parseInt(coord.substring(1, 2));
-        if (row < 1 || row > 8) {throw new NumberFormatException("Row num out of range");}
+        if (row < 1 || row > 8) {throw new NumberFormatException("ERROR: Row num out of range");}
 
         return new ChessPosition(row, col);
     }
