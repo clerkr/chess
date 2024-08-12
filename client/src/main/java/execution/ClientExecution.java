@@ -23,6 +23,7 @@ import java.util.Scanner;
 public class ClientExecution {
 
     private static ClientExecution instance;
+
     public static final int PORT = 8080;
     public static final ServerFacade FACADE = new ServerFacade(PORT);
     public static final Scanner SCANNER = new Scanner(System.in);
@@ -34,7 +35,6 @@ public class ClientExecution {
     public boolean observing = false;
     public HashSet<FacadeGameData> facadeGames = new HashSet<>();
     public String[] parsed = new String[10];
-
 
     private ClientExecution() {}
     public static synchronized ClientExecution getInstance() {
@@ -59,7 +59,8 @@ public class ClientExecution {
         DrawPrompt.drawLoggedOutPrompt();
         String userCommand = SCANNER.nextLine();
         parsed = userCommand.split("\\s+");
-        switch (parsed[0].toLowerCase()) {
+        String command = parsed[0];
+        switch (command.toLowerCase()) {
             case "quit":
                 new QuitCommand().execute(); break;
             case "help":
@@ -69,14 +70,13 @@ public class ClientExecution {
             case "login":
                 new LoginCommand().execute(); break;
             default:
-                System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");
+                invalidParamsMessage(command);
                 FACADE.preHelp();
                 break;
         }
     }
 
     private void postLoginRun() {
-//        System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + "[LOGGED IN] " + EscapeSequences.RESET_TEXT_COLOR + ">>> ");
         while(!gamePlayGameName.isEmpty()) {
             gamePlayRun();
         }
@@ -123,12 +123,12 @@ public class ClientExecution {
                 move [start coordinate] [end coordinate] (e.g. 'a1,' 'g5,' or 'c8')
                 moves [piece coordinate] - highlights valid moves for the piece on the provided coordinate
                 resign - forfeiture (confirmation is prompted)""";
+
         switch (parsed[0].toLowerCase()) {
             case "help":
                 System.out.println(helpMessage);
                 break;
             case "leave":
-//                gamePlayGameName = "";
                 new LeaveCommand().execute();
                 observing = false;
                 break;
@@ -136,10 +136,6 @@ public class ClientExecution {
                 FACADE.drawBoardHandler();
                 break;
             case "move":
-                if (observing) {
-                    System.out.println("Observers cannot move pieces");
-                    break;
-                }
                 new MakeMoveCommand().execute();
                 break;
             case "resign":
@@ -158,4 +154,9 @@ public class ClientExecution {
                 break;
         }
     }
+
+    private void invalidParamsMessage(String param) {
+        System.out.println("ERROR: < " + param + " > unknown command\nValid commands:");
+    }
+
 }

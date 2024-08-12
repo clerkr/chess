@@ -21,17 +21,16 @@ public class MakeMoveCommand implements Command {
 
     @Override
     public void execute() {
+        if (observingCheck()) { return; }
 
         if (client.parsed.length < 3 || client.parsed.length > 4) {
             System.out.println("Incorrect argument arrangement\nUse 'help' for command guides");
             return;
         }
-
         try {
-
             boolean gameOver = facade.gameOverCheck();
             if (gameOver) {
-                throw new GameOverException("");
+                throw new GameOverException("ERROR: No moves can be made. Game is over");
             }
 
             boolean playersTurn = facade.checkPlayersTurn();
@@ -39,23 +38,8 @@ public class MakeMoveCommand implements Command {
                 throw new OutOfTurnAttemptException("");
             }
 
-            ChessPiece.PieceType promotionType = null;
-
-            if (client.parsed.length == 4) {
-                String rawPromType = client.parsed[3].toLowerCase();
-
-                if (rawPromType.contains("rook")) {
-                    promotionType = ChessPiece.PieceType.ROOK;
-                } else if (rawPromType.contains("knight")) {
-                    promotionType = ChessPiece.PieceType.KNIGHT;
-                } else if (rawPromType.contains("bishop")) {
-                    promotionType = ChessPiece.PieceType.BISHOP;
-                } else if (rawPromType.contains("queen")) {
-                    promotionType = ChessPiece.PieceType.QUEEN;
-                } else {
-                    throw new PromotionTypeException("");
-                }
-            }
+            String rawPromType = client.parsed[3].toLowerCase();
+            ChessPiece.PieceType promotionType = findPromotionPiece(rawPromType);
 
             String startCoord = client.parsed[1];
             String endCoord = client.parsed[2];
@@ -63,7 +47,7 @@ public class MakeMoveCommand implements Command {
             ChessPosition startPosition = parseCoordStringAsPos(startCoord);
             ChessPosition endPosition = parseCoordStringAsPos(endCoord);
 
-            ChessMove move = prepMove(startPosition, endPosition, promotionType);
+            ChessMove move = prepMove(startCoord, endCoord, promotionType);
 
             if (!facade.checkPiecePlayersColor(move)) {
                 throw new OpponentPieceMovementException("");
@@ -91,17 +75,48 @@ public class MakeMoveCommand implements Command {
             System.out.println("ERROR: It is not your turn");
         } catch (NullPointerException e) {
             System.out.println("ERROR: No piece selected");
-        } catch (GameOverException e) {
-            System.out.println("ERROR: No moves can be made. Game is over");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
 
     }
 
-    private ChessMove prepMove(ChessPosition startPos, ChessPosition endPos, ChessPiece.PieceType promotionType) {
-        return new ChessMove(startPos, endPos, promotionType);
+    private boolean observingCheck() {
+        if (client.observing) {
+            System.out.println("Observers cannot move pieces");
+            return true;
+        }
+        return false;
     }
 
+    private ChessPiece.PieceType findPromotionPiece(String rawPromType) throws PromotionTypeException {
+        ChessPiece.PieceType promotionType = null;
+
+        if (client.parsed.length == 4) {
+            if (rawPromType.contains("rook")) {
+                promotionType = ChessPiece.PieceType.ROOK;
+            } else if (rawPromType.contains("knight")) {
+                promotionType = ChessPiece.PieceType.KNIGHT;
+            } else if (rawPromType.contains("bishop")) {
+                promotionType = ChessPiece.PieceType.BISHOP;
+            } else if (rawPromType.contains("queen")) {
+                promotionType = ChessPiece.PieceType.QUEEN;
+            } else {
+                throw new PromotionTypeException("ERROR: Invalid pawn promotion piece type");
+            }
+        }
+
+        return promotionType;
+    }
+
+    private ChessMove prepMove(String startPos,
+                               String endPos,
+                               ChessPiece.PieceType promotionType) throws ColumnLetterFormatException, CoordinateFormatException {
+        ChessPosition start = parseCoordStringAsPos(startPos);
+        ChessPosition end = parseCoordStringAsPos(endPos);
+        return new ChessMove(start, end, promotionType);
+    }
 
     private ChessPosition parseCoordStringAsPos(String coord) throws CoordinateFormatException, NumberFormatException, ColumnLetterFormatException {
 
