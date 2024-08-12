@@ -44,9 +44,6 @@ public class MakeMoveCommand implements Command {
             String startCoord = client.parsed[1];
             String endCoord = client.parsed[2];
 
-            ChessPosition startPosition = parseCoordStringAsPos(startCoord);
-            ChessPosition endPosition = parseCoordStringAsPos(endCoord);
-
             ChessMove move = prepMove(startCoord, endCoord, promotionType);
 
             if (!facade.checkPiecePlayersColor(move)) {
@@ -59,14 +56,8 @@ public class MakeMoveCommand implements Command {
             facade.sendMakeMoveHandler(client.authToken, client.gamePlayGameID, move);
 
 
-        } catch (ColumnLetterFormatException e) {
-            System.out.println("ERROR: positions can only have a column letter of a-h");
         } catch (NumberFormatException e) {
             System.out.println("ERROR: row numbers must be between 1-8");
-        } catch (CoordinateFormatException e) {
-            System.out.println("ERROR: Invalid coordinate format");
-        } catch (PromotionTypeException e) {
-            System.out.println("ERROR: Invalid pawn promotion piece type");
         } catch (OpponentPieceMovementException e) {
             System.out.println("ERROR: Attempted to move opponent piece");
         } catch (InvalidMoveException e) {
@@ -113,9 +104,15 @@ public class MakeMoveCommand implements Command {
     private ChessMove prepMove(String startPos,
                                String endPos,
                                ChessPiece.PieceType promotionType) throws ColumnLetterFormatException, CoordinateFormatException {
-        ChessPosition start = parseCoordStringAsPos(startPos);
-        ChessPosition end = parseCoordStringAsPos(endPos);
-        return new ChessMove(start, end, promotionType);
+        try {
+            ChessPosition start = parseCoordStringAsPos(startPos);
+            ChessPosition end = parseCoordStringAsPos(endPos);
+            return new ChessMove(start, end, promotionType);
+        } catch (ColumnLetterFormatException e) {
+            throw new ColumnLetterFormatException("ERROR: positions can only have a column letter of a-h");
+        } catch (CoordinateFormatException e) {
+            throw new CoordinateFormatException("ERROR: Invalid coordinate format");
+        }
     }
 
     private ChessPosition parseCoordStringAsPos(String coord) throws CoordinateFormatException, NumberFormatException, ColumnLetterFormatException {
