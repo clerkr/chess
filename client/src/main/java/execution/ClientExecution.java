@@ -3,6 +3,7 @@ package execution;
 import chess.ChessGame;
 import chess.ChessPosition;
 import clientcommands.*;
+import clientcommands.gameplay.HighlightMoveCommand;
 import clientcommands.gameplay.LeaveCommand;
 import clientcommands.gameplay.MakeMoveCommand;
 import clientcommands.gameplay.ResignCommand;
@@ -44,15 +45,14 @@ public class ClientExecution {
     }
 
     public void run() {
-        DrawChessBoard.drawHighlightedBoard(new ChessGame(), true, new ChessPosition(7,5));
-//        while(true) {
-//            while (Objects.equals(authToken, "")) {
-//                preLoginRun();
-//            }
-//            while (authToken.length() > 1) {
-//                postLoginRun();
-//            }
-//        }
+        while(true) {
+            while (Objects.equals(authToken, "")) {
+                preLoginRun();
+            }
+            while (authToken.length() > 1) {
+                postLoginRun();
+            }
+        }
     }
 
     private void preLoginRun() {
@@ -113,7 +113,6 @@ public class ClientExecution {
         }
     }
 
-    // Just a dupe rn... add in other commands
     private void gamePlayRun() {
         DrawPrompt.drawGamePlayPrompt();
         String userCommand = SCANNER.nextLine();
@@ -150,6 +149,9 @@ public class ClientExecution {
                     break;
                 }
                 new ResignCommand().execute();
+                break;
+            case "moves":
+                new HighlightMoveCommand().execute();
                 break;
             default:
                 System.out.println("ERROR: < " + parsed[0] + " > unknown command\nValid commands:");

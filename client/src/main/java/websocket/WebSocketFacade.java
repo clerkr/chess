@@ -2,6 +2,7 @@ package websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
 import model.GameData;
@@ -129,6 +130,10 @@ public class WebSocketFacade extends Endpoint {
 
     public void drawGameUIBoardHandler() {
         gameHandler.drawBoard();
+    }
+
+    public void drawHighlight(String pos) {
+        gameHandler.drawHighlight(pos);
     }
 
     @Override

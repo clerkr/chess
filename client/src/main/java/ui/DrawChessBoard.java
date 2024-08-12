@@ -78,13 +78,13 @@ public class DrawChessBoard {
             // Left border
             System.out.print(borderStyle + " " + (wor+1) + " " + resStyle);
             for (int col = 0; col < 8; col++) {
-                ChessPosition boardPos = new ChessPosition(row+1, col+1);
+                int loc = (whitePlayer) ? 7 - col : col;
+                ChessPosition boardPos = new ChessPosition(wor+1, loc+1);
                 boolean validMoveCheck = validMovePositions.contains(boardPos);
-                boolean lightBG = (row+col) % 2 == 0;
+                boolean lightBG = (wor+loc) % 2 == 0;
                 String bg = (lightBG) ?
                         (validMoveCheck ? EscapeSequences.SET_BG_COLOR_GREEN: EscapeSequences.SET_BG_COLOR_LIGHT_GREY) :
                         (validMoveCheck ? EscapeSequences.SET_BG_COLOR_DARK_GREEN: EscapeSequences.SET_BG_COLOR_DARK_GREY);
-                int loc = (whitePlayer) ? 7 - col : col;
                 ChessPiece pos = board[wor][loc];
                 String piece = (pos == null) ? ("   ") : drawPiece(pos);
                 System.out.print(bg + piece + resStyle);
@@ -97,7 +97,6 @@ public class DrawChessBoard {
         drawBorderHeadFoot(borderStyle, whitePlayer, resStyle);
         System.out.print("\n");
     }
-
 
     public static void drawBoard(ChessGame game, boolean whitePlayer) {
 
@@ -140,6 +139,7 @@ public class DrawChessBoard {
         drawBorderHeadFoot(borderStyle, whitePlayer, resStyle);
         System.out.print("\n");
     }
+
     public static void drawBoards(ChessGame game) {
         System.out.println();
         drawBoard(game, false);

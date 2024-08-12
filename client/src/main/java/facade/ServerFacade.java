@@ -1,6 +1,7 @@
 package facade;
 
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
@@ -240,6 +241,10 @@ public class ServerFacade {
 
     public void drawBoardHandler() {
         wsf.drawGameUIBoardHandler();
+    }
+
+    public void drawHighlight(String pos) {
+        wsf.drawHighlight(pos);
     }
 
     public boolean checkValidMove(ChessMove move) {
