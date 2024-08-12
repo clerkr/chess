@@ -1,9 +1,6 @@
 package facade;
 
 import chess.ChessMove;
-import chess.ChessPosition;
-import chess.InvalidMoveException;
-import com.google.gson.Gson;
 import execution.ClientExecution;
 import model.UserData;
 import ui.DrawGameList;
@@ -11,13 +8,10 @@ import ui.GameUI;
 import websocket.WebSocketFacade;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class ServerFacade {
 
@@ -236,6 +230,8 @@ public class ServerFacade {
         wsf.leaveGameSender(authToken, gameID);
     }
 
+
+
     public void resignGameHandler(String authToken, int gameID) {
         wsf.resignGameSender(authToken, gameID);
     }
@@ -244,7 +240,7 @@ public class ServerFacade {
         wsf.drawGameUIBoardHandler();
     }
 
-    public void drawHighlight(String pos) {
+    public void drawHighlightHandler(String pos) {
         wsf.drawHighlight(pos);
     }
 
@@ -255,8 +251,6 @@ public class ServerFacade {
     public boolean checkPlayersTurn() {
         return gameUI.checkPlayersTurn();
     }
-
-
 
     public boolean checkPiecePlayersColor(ChessMove move) {
         return gameUI.checkPiecePlayersColor(move);

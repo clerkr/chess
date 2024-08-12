@@ -38,8 +38,11 @@ public class MakeMoveCommand implements Command {
                 throw new OutOfTurnAttemptException("ERROR: It is not your turn");
             }
 
-            String rawPromType = client.parsed[3].toLowerCase();
-            ChessPiece.PieceType promotionType = findPromotionPiece(rawPromType);
+            ChessPiece.PieceType promotionType = null;
+            if (client.parsed.length == 4) {
+                String rawPromType = client.parsed[3].toLowerCase();
+                promotionType = findPromotionPiece(rawPromType);
+            }
 
             String startCoord = client.parsed[1];
             String endCoord = client.parsed[2];
@@ -74,21 +77,19 @@ public class MakeMoveCommand implements Command {
     }
 
     private ChessPiece.PieceType findPromotionPiece(String rawPromType) throws PromotionTypeException {
-        ChessPiece.PieceType promotionType = null;
-
-        if (client.parsed.length == 4) {
-            if (rawPromType.contains("rook")) {
-                promotionType = ChessPiece.PieceType.ROOK;
-            } else if (rawPromType.contains("knight")) {
-                promotionType = ChessPiece.PieceType.KNIGHT;
-            } else if (rawPromType.contains("bishop")) {
-                promotionType = ChessPiece.PieceType.BISHOP;
-            } else if (rawPromType.contains("queen")) {
-                promotionType = ChessPiece.PieceType.QUEEN;
-            } else {
-                throw new PromotionTypeException("ERROR: Invalid pawn promotion piece type");
-            }
+        ChessPiece.PieceType promotionType;
+        if (rawPromType.contains("rook")) {
+            promotionType = ChessPiece.PieceType.ROOK;
+        } else if (rawPromType.contains("knight")) {
+            promotionType = ChessPiece.PieceType.KNIGHT;
+        } else if (rawPromType.contains("bishop")) {
+            promotionType = ChessPiece.PieceType.BISHOP;
+        } else if (rawPromType.contains("queen")) {
+            promotionType = ChessPiece.PieceType.QUEEN;
+        } else {
+            throw new PromotionTypeException("ERROR: Invalid pawn promotion piece type");
         }
+
 
         return promotionType;
     }

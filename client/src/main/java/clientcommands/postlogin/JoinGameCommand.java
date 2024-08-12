@@ -32,11 +32,7 @@ public class JoinGameCommand implements Command {
                 return;
             }
             String teamColorSelector = client.parsed[2].toLowerCase();
-            if (!(teamColorSelector.equals("white")
-                    || teamColorSelector.equals("black"))) {
-                System.out.println("Please use either WHITE or BLACK to define your joining color.");
-                return;
-            }
+            if (!teamColorSelectorCheck(teamColorSelector)) {return;}
 
             FacadeGameData facadeGame = findGame(gameSelectorID);
             if (facadeGame == null) {
@@ -48,8 +44,7 @@ public class JoinGameCommand implements Command {
                 client.gamePlayGameName = facadeGame.gameName;
                 client.gamePlayGameID = facadeGame.gameID;
             } else {
-                boolean teamFilled = filledTeamCheck(facadeGame, teamColorSelector);
-                if (teamFilled) {
+                if (filledTeamCheck(facadeGame, teamColorSelector)) {
                     System.out.println("ERROR: That color is already taken by another player in this game");
                 } else {
 
@@ -63,6 +58,14 @@ public class JoinGameCommand implements Command {
         } catch (NumberFormatException e) {
             System.out.println("Please provide a valid game number");
         }
+    }
+
+    private boolean teamColorSelectorCheck(String teamColorSelector) {
+        if(!(teamColorSelector.equals("white") || teamColorSelector.equals("black"))) {
+            System.out.println("Please use either WHITE or BLACK to define your joining color.");
+            return false;
+        }
+        return true;
     }
 
     private FacadeGameData findGame(int gameSelectorID) {
